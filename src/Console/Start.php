@@ -4,6 +4,7 @@ namespace BMM\CMSMove\Console;
 
 use InvalidArgumentException;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -35,9 +36,10 @@ class Start extends Command
     {
         $framework = $input->getArgument('framework');
         $configPath = __DIR__ . '/../ConfigGenerators/' . $framework;
-        $configClass = $configPath . '/config.php';
+        $configBoostrap = $configPath . '/config.php';
+        $io = new SymfonyStyle($input, $output);
 
-        if (!file_exists($configClass)) {
+        if (!file_exists($configBoostrap)) {
             throw new InvalidArgumentException("Could not find configuration class for `$framework`");
         }
 
@@ -47,10 +49,11 @@ class Start extends Command
             throw new InvalidArgumentException("No starter config file found for `$framework`. Please ensure there is a config.json file with configuration defaults to continue.");
         }
 
-        if (file_exists(getcwd() . '/config.json')) {
+        if (file_exists(getcwd() . '/moveConfig.json')) {
 
+            $io->caution("Whoa there! It looks like you already have a config file");
             $helper = $this->getHelper('question');
-            $question = new ConfirmationQuestion('Whoa there! It looks like you already have a config file. Are you sure you want to overwrite it? ', false);
+            $question = new ConfirmationQuestion('Are you sure you want to overwrite it? ', false);
 
             if (!$helper->ask($input, $output, $question)) {
                 return;
@@ -58,9 +61,9 @@ class Start extends Command
 
         }
 
-        copy($configFile, getcwd() . '/config.json');
+        copy($configFile, getcwd() . '/moveConfig.json');
 
         $output->writeln('<comment>Config file created for ' . $framework . '!</comment>');
-        $output->writeln('<comment>Please modify file with your application defaults and environment variables.</comment>');
+        $output->writeln('<comment>Please modify file with your application defaults and environment variables to get started.</comment>');
     }
 }

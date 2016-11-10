@@ -8,7 +8,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 use BMM\CMSMove\ConfigGenerators\Config as BaseConfig;
 
-class EEConfig extends BaseConfig
+class Ee extends BaseConfig
 {
 
 }

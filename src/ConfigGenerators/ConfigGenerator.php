@@ -10,6 +10,13 @@ abstract class Config
 {
 
     /**
+     * The config file
+     *
+     * @var
+     */
+    protected $configFile;
+
+    /**
      * The environment (staging, production, etc.)
      *
      * @var
@@ -86,9 +93,13 @@ abstract class Config
      */
     protected $dbPort;
 
-    public function __construct($environment, $host, $directory, $sshUser, $sshPass, $sshPort = 22, $database, $dbUser, $dbPass, $dbHost = 'localhost', $dbPort = 3306)
+    public function __construct($configFile)
     {
+        $this->configFile = $configFile;
+    }
 
+    public function readConfig($environment, $host, $directory, $sshUser, $sshPass, $sshPort = 22, $database, $dbUser, $dbPass, $dbHost = 'localhost', $dbPort = 3306)
+    {
         $this->environment = $environment;
         $this->host = $host;
         $this->directory = $directory;
@@ -100,12 +111,6 @@ abstract class Config
         $this->dbPass = $dbPass;
         $this->dbHost = $dbHost;
         $this->dbPort = $dbPort;
-
-    }
-
-    public function readConfig()
-    {
-
     }
 
 }

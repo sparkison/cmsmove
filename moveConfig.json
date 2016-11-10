@@ -1,15 +1,11 @@
 {
-  "type": "ee",
+  "type": "craft",
   "mappings": {
-    "app": "system",
+    "app": "app",
     "public": "public",
-    "config": "user/config",
-    "plugins": {
-      "files": "user/addons",
-      "templates": "themes/user"
-    },
-    "images": "images",
-    "templates": "user/templates",
+    "config": "config",
+    "plugins": "plugins",
+    "templates": "templates",
     "custom": {
       "uploads": "uploads"
     }
