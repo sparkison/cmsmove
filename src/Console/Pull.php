@@ -100,6 +100,8 @@ class Pull extends Command
         // Fire it up!
         $config = new $this->classNamespace($this->environment, $this->host, $this->directory, $this->sshUser, $this->sshPass, $this->sshPort, $this->database, $this->dbUser, $this->dbPass, $this->dbHost, $this->dbPort);
 
+        $config->{$this->destination}();
+
         // Check if the desired method exists
         if (method_exists($this->destination, $this->classNamespace)) {
 
