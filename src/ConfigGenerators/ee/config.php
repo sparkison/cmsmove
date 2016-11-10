@@ -11,6 +11,4 @@ use BMM\CMSMove\ConfigGenerators\Config as BaseConfig;
 class EEConfig extends BaseConfig
 {
 
-
-
 }
