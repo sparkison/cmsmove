@@ -32,14 +32,21 @@ class Start extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $framework = $input->getArgument('framework');
-        $configPath = __DIR__ . '/../ConfigGenerator/' . $framework . '/config.json';
+        $configPath = __DIR__ . '/../ConfigGenerators/' . $framework;
+        $configClass = $configPath . '/config.php';
 
-        if (!file_exists($configPath)) {
-            throw new InvalidArgumentException("Could not find configuration data for `$framework`");
+        if(!file_exists($configClass)) {
+            throw new InvalidArgumentException("Could not find configuration class for `$framework`");
         }
 
-        copy($configPath, getcwd() . '/cmsmove-' . $framework . '.json');
+        $configFile = $configPath . '/config.json';
 
-        $output->writeln('<comment>Config file created!</comment>');
+        if (!file_exists($configFile)) {
+            throw new InvalidArgumentException("No starter config file found for `$framework`. Please ensure there is a config.json file with configuration defaults to continue.");
+        }
+
+        copy($configFile, getcwd() . '/cmsmove-' . $framework . '.json');
+
+        $output->writeln('<comment>Config file created for ' . $framework . '!</comment>');
     }
 }

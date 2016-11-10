@@ -4,6 +4,8 @@
 use Symfony\Component\Console\Application;
 
 use BMM\CMSMove\Console\Start;
+use BMM\CMSMove\Console\Push;
+use BMM\CMSMove\Console\Pull;
 
 if (file_exists(__DIR__.'/../../autoload.php')) {
     require __DIR__.'/../../autoload.php';
@@ -11,6 +13,8 @@ if (file_exists(__DIR__.'/../../autoload.php')) {
     require __DIR__.'/vendor/autoload.php';
 }
 
-$app = new Application('CMS Move', '0.0.0-dev');
+$app = new Application('CMS Move', '0.0.1-dev');
 $app->add(new Start);
+$app->add(new Push);
+$app->add(new Pull);
 $app->run();
