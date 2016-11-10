@@ -1,14 +1,14 @@
 <?php
 
-namespace BMM\CMSMove\ConfigGenerators\Craft;
+namespace BMM\CMSMove\Config\Ee;
 
 use ZipArchive;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-use BMM\CMSMove\ConfigGenerators\Config as BaseConfig;
+use BMM\CMSMove\Config\Config as BaseConfig;
 
-class Ee extends BaseConfig
+class Config extends BaseConfig
 {
 
 }
