@@ -24,6 +24,7 @@ class Pull extends Command
     private $host;
     private $directory;
     private $sshUser;
+    private $sshKeyFile;
     private $sshPass;
     private $sshPort;
     private $database;
@@ -98,7 +99,7 @@ class Pull extends Command
 
         // Already checked if class exists and configured required variables
         // Fire it up!
-        $config = new $this->classNamespace($configVariables, $this->environment, $this->action, $this->host, $this->directory, $this->sshUser, $this->sshPass, $this->sshPort, $this->database, $this->dbUser, $this->dbPass, $this->dbHost, $this->dbPort);
+        $config = new $this->classNamespace($configVariables, $this->environment, $this->action, $this->host, $this->directory, $this->sshUser, $this->sshKeyFile, $this->sshPass, $this->sshPort, $this->database, $this->dbUser, $this->dbPass, $this->dbHost, $this->dbPort);
 
         // Check if the desired method exists
         if (method_exists($this->classNamespace, $this->destination)) {
@@ -165,9 +166,11 @@ class Pull extends Command
         // See if SSH password is set
         if (array_key_exists('password', $environmentArgs)) {
             $this->sshPass = $environmentArgs->password;
-        } else {
-            $io->error("Unable to locate the \"password\" variable in your environment. Please check for proper formatting and try again.");
-            return;
+        }
+
+        // See if SSH key file is set
+        if (array_key_exists('keyfile', $environmentArgs)) {
+            $this->sshKeyFile = $environmentArgs->keyfile;
         }
 
         // See if SSH port is set

@@ -75,6 +75,16 @@ abstract class Config
     protected $sshPass;
 
     /**
+     * Must provide either password or keyfile!
+     * Cannot leave both blank.
+     *
+     * Will default to using keyfile if present
+     *
+     * @var
+     */
+    protected $sshKeyFile;
+
+    /**
      * SSH port to use to connect (defaults to 22)
      *
      * @var
@@ -116,7 +126,7 @@ abstract class Config
      */
     protected $dbPort;
 
-    public function __construct($configVars, $environment, $action, $host, $directory, $sshUser, $sshPass, $sshPort = 22, $database, $dbUser, $dbPass, $dbHost = 'localhost', $dbPort = 3306)
+    public function __construct($configVars, $environment, $action, $host, $directory, $sshUser, $sshKeyFile, $sshPass, $sshPort = 22, $database, $dbUser, $dbPass, $dbHost = 'localhost', $dbPort = 3306)
     {
         $this->configVars = $configVars;
         $this->environment = $environment;
@@ -124,6 +134,7 @@ abstract class Config
         $this->host = $host;
         $this->directory = $directory;
         $this->sshUser = $sshUser;
+        $this->sshKeyFile = $sshKeyFile;
         $this->sshPass = $sshPass;
         $this->sshPort = $sshPort;
         $this->database = $database;

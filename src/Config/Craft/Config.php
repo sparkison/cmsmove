@@ -16,7 +16,18 @@ class Config extends BaseConfig
      */
     public function templates()
     {
+        $cwd = getcwd();
+        $command = "";
 
+        // Determine if using SSH password, or keyfile
+        $ssh = "";
+
+        // Determine if push or pull
+        if ($this->action === 'pull') {
+            $command = "rsync --progress -rlpt --compress --omit-dir-times --delete --exclude-from='{$cwd}/rsync.ignore' ";
+        } else if ($this->action === 'push') {
+            $command = "rsync --progress -rlpt --compress --omit-dir-times --delete --exclude-from='{$cwd}/rsync.ignore' ";
+        }
     }
 
 }
