@@ -2,7 +2,6 @@
 
 namespace BMM\CMSMove\Console;
 
-use ReflectionProperty;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Console\Input\InputArgument;
