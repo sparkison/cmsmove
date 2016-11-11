@@ -13,7 +13,7 @@ class Config extends BaseConfig
 
     public function templates()
     {
-        echo 'sync the templates!!';
+        
     }
 
 }
