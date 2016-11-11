@@ -25,6 +25,14 @@ abstract class Config
 {
 
     /**
+     * The config file contents
+     * Access keys using Object syntax
+     *
+     * @var
+     */
+    protected $configVars;
+
+    /**
      * The environment (staging, production, etc.)
      *
      * @var
@@ -108,8 +116,9 @@ abstract class Config
      */
     protected $dbPort;
 
-    public function __construct($environment, $action, $host, $directory, $sshUser, $sshPass, $sshPort = 22, $database, $dbUser, $dbPass, $dbHost = 'localhost', $dbPort = 3306)
+    public function __construct($configVars, $environment, $action, $host, $directory, $sshUser, $sshPass, $sshPort = 22, $database, $dbUser, $dbPass, $dbHost = 'localhost', $dbPort = 3306)
     {
+        $this->configVars = $configVars;
         $this->environment = $environment;
         $this->action = $action;
         $this->host = $host;
