@@ -20,7 +20,11 @@ class Config extends BaseConfig
         $command = "";
 
         // Determine if using SSH password, or keyfile
-        $ssh = "";
+        if ($this->sshKeyFile !== "") {
+
+        } else {
+
+        }
 
         // Determine if push or pull
         if ($this->action === 'pull') {
