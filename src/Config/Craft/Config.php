@@ -11,9 +11,12 @@ use BMM\CMSMove\Config\Config as BaseConfig;
 class Config extends BaseConfig
 {
 
+    /**
+     * Syncs the templates
+     */
     public function templates()
     {
-        
+
     }
 
 }

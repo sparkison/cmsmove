@@ -21,6 +21,7 @@ class Pull extends Command
     private $classNamespace;
     private $environment;
     private $destination;
+    private $action = 'pull';
     private $host;
     private $directory;
     private $sshUser;
@@ -98,7 +99,7 @@ class Pull extends Command
 
         // Already checked if class exists and configured required variables
         // Fire it up!
-        $config = new $this->classNamespace($this->environment, $this->host, $this->directory, $this->sshUser, $this->sshPass, $this->sshPort, $this->database, $this->dbUser, $this->dbPass, $this->dbHost, $this->dbPort);
+        $config = new $this->classNamespace($this->environment, $this->action, $this->host, $this->directory, $this->sshUser, $this->sshPass, $this->sshPort, $this->database, $this->dbUser, $this->dbPass, $this->dbHost, $this->dbPort);
 
         // Check if the desired method exists
         if (method_exists($this->classNamespace, $this->destination)) {

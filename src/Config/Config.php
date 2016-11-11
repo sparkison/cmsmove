@@ -2,19 +2,41 @@
 
 namespace BMM\CMSMove\Config;
 
+/**
+ * Abstract class to define the constructor and variables that will be common among all CMS
+ * Methods are the "actions" that can be taken with a "push" or a "pull"
+ *
+ * Be sure to extend this class for any custom CMS integration. The bootstrap config should also be included
+ * defining the basic structure of the CMS. This file can be digested by your Config class for further customization
+ * of actions to take.
+ *
+ * Each config.json file must have the fields defined within this class.
+ *
+ * Basic idea is to create a method for each action:
+ *
+ * "cmsmove pull <environment> <action>"
+ */
+
 use ZipArchive;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 abstract class Config
 {
-    
+
     /**
      * The environment (staging, production, etc.)
      *
      * @var
      */
     protected $environment;
+
+    /**
+     * Whether this is a push or a pull action
+     *
+     * @var
+     */
+    protected $action;
 
     /**
      * The remote hostname or ip address
@@ -86,9 +108,10 @@ abstract class Config
      */
     protected $dbPort;
 
-    public function __construct($environment, $host, $directory, $sshUser, $sshPass, $sshPort = 22, $database, $dbUser, $dbPass, $dbHost = 'localhost', $dbPort = 3306)
+    public function __construct($environment, $action, $host, $directory, $sshUser, $sshPass, $sshPort = 22, $database, $dbUser, $dbPass, $dbHost = 'localhost', $dbPort = 3306)
     {
         $this->environment = $environment;
+        $this->action = $action;
         $this->host = $host;
         $this->directory = $directory;
         $this->sshUser = $sshUser;
