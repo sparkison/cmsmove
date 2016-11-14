@@ -92,6 +92,7 @@ class Pull extends Command
     /**
      * Start it up!
      *
+     * @param $configVariables
      * @param $io
      */
     private function doPull($configVariables, $io)

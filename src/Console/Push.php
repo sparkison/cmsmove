@@ -92,6 +92,7 @@ class Push extends Command
     /**
      * Start it up!
      *
+     * @param $configVariables
      * @param $io
      */
     private function doPush($configVariables, $io)
