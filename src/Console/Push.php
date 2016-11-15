@@ -100,7 +100,7 @@ class Push extends Command
 
         // Already checked if class exists and configured required variables
         // Fire it up!
-        $config = new $this->classNamespace($configVariables, $this->environment, $this->action, $this->host, $this->directory, $this->sshUser, $this->sshKeyFile, $this->sshPass, $this->sshPort, $this->database, $this->dbUser, $this->dbPass, $this->dbHost, $this->dbPort);
+        $config = new $this->classNamespace($io, $configVariables, $this->environment, $this->action, $this->host, $this->directory, $this->sshUser, $this->sshKeyFile, $this->sshPass, $this->sshPort, $this->database, $this->dbUser, $this->dbPass, $this->dbHost, $this->dbPort);
 
         // Check if the desired method exists
         if (method_exists($this->classNamespace, $this->destination)) {
