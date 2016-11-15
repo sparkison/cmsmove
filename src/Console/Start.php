@@ -35,7 +35,7 @@ class Start extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $framework = $input->getArgument('framework');
-        $configPath = __DIR__ . '/../ConfigGenerators/' . $framework;
+        $configPath = __DIR__ . '/../Config/' . $framework;
         $configBoostrap = $configPath . '/config.php';
         $io = new SymfonyStyle($input, $output);
 
@@ -44,6 +44,7 @@ class Start extends Command
         }
 
         $configFile = $configPath . '/config.json';
+        $ignoreFile = __DIR__ . '/../Config/rsync.ignore';
 
         if (!file_exists($configFile)) {
             throw new InvalidArgumentException("No starter config file found for `$framework`. Please ensure there is a config.json file with configuration defaults to continue.");
@@ -62,6 +63,7 @@ class Start extends Command
         }
 
         copy($configFile, getcwd() . '/moveConfig.json');
+        copy($ignoreFile, getcwd() . '/rsync.ignore');
 
         $output->writeln('<comment>Config file created for ' . $framework . '!</comment>');
         $output->writeln('<comment>Please modify file with your application defaults and environment variables to get started.</comment>');
