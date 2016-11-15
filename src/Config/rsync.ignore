@@ -1,0 +1,16 @@
+*.sql
+*.swp
+.git
+.sass-cache
+.DS_Store
+npm-debug.log
+db_backups
+node_modules
+bower_components
+sized/
+thumbs/
+_thumbs/
+/user/cache/
+craft/storage/runtime/
+moveConfig.json
+rsync.ignore
