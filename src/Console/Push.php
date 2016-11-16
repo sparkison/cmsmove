@@ -59,7 +59,7 @@ class Push extends Command
         $io = new SymfonyStyle($input, $output);
         $configFile = getcwd() . '/moveConfig.json';
         if (!file_exists($configFile)) {
-            $io->error("No config file found. Please run the \"start\" command first.");
+            $io->error("No config file found. Please run the \"config\" command first.");
             return;
         }
 
