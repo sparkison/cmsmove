@@ -1,7 +1,7 @@
 {
   "type": "craft",
   "mappings": {
-    "app": "app",
+    "app": "craft",
     "public": "public",
     "config": "config",
     "plugins": "plugins",

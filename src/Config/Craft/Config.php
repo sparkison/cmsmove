@@ -51,9 +51,9 @@ class Config extends BaseConfig
         }
 
         if(isset($exit_code) && $exit_code == 0) {
-            $this->io->success("Command executed successfully!");
+            $this->io->success(ucfirst($this->action) . " command executed successfully!");
         } else {
-            $this->io->error("There was an error executing the command. Please check your config and try again");
+            $this->io->error("There was an error executing the " . ucfirst($this->action) . " command. Please check your config and try again");
         }
 
     }
