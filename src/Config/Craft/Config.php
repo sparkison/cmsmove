@@ -22,14 +22,18 @@ class Config extends BaseConfig
         $cwd = getcwd();
         $ssh = "";
 
-        // Determine if using SSH password, or keyfile
+        /**
+         * Determine if using SSH password, or keyfile
+         */
         if ($this->sshKeyFile !== "") {
             $ssh = "-e 'ssh -i " . $this->sshKeyFile . "'";
         } else {
             $ssh = "--rsh=\"sshpass -p '" . $this->sshPass . "' ssh -o StrictHostKeyChecking=no\"";
         }
 
-        // Inform user of command
+        /**
+         * Inform user of command we're about to perform
+         */
         $title = ucfirst($this->action) . "ing templates...";
         $this->io->title($title);
 
@@ -40,23 +44,34 @@ class Config extends BaseConfig
             $command = "rsync {$ssh} --progress -rlpt --compress --omit-dir-times --delete {$cwd}/test/ {$this->sshUser}@{$this->host}:/tmp";
         }
 
+        /**
+         * Make sure we have a command set
+         * If so, execute it
+         */
         if (isset($command)) {
             exec($command, $output, $exit_code);
         }
 
+        /**
+         * If exec returned any output, display it for the user
+         */
         if (isset($output) && !empty($output)) {
             foreach ($output as $line) {
                 $this->io->writeln($line);
             }
         }
 
+        /**
+         * If exec returned an error code, show the user there was an error
+         * Else, show a success message
+         */
         if(isset($exit_code) && $exit_code == 0) {
             $this->io->success(ucfirst($this->action) . " command executed successfully!");
         } else {
             $this->io->error("There was an error executing the " . ucfirst($this->action) . " command. Please check your config and try again");
         }
 
-    }
+    } // END templates() function
 
     /**
      * Sync the database
@@ -77,6 +92,6 @@ class Config extends BaseConfig
 //        if ($ssh->login('root', $key)) {
 //            $this->io->success('Login with keyfile success!!');
 //        }
-    }
+    } // END database() function
 
 }
