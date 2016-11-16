@@ -15,7 +15,7 @@ class Config extends BaseConfig
 {
 
     /**
-     * Syncs the templates
+     * Sync the templates
      */
     public function templates()
     {
@@ -23,9 +23,14 @@ class Config extends BaseConfig
         $ssh = "";
 
         /**
+         * Get the template directory from the config
+         */
+        $templateDir = $this->configVars->mappings->app . "/" . $this->configVars->mappings->templates;
+
+        /**
          * Determine if using SSH password, or keyfile
          */
-        if ($this->sshKeyFile !== "") {
+        if (!empty($this->sshKeyFile)) {
             $ssh = "-e 'ssh -i " . $this->sshKeyFile . "'";
         } else {
             $ssh = "--rsh=\"sshpass -p '" . $this->sshPass . "' ssh -o StrictHostKeyChecking=no\"";
@@ -39,10 +44,16 @@ class Config extends BaseConfig
 
         // Determine if push or pull
         if ($this->action === 'pull') {
-            $command = "rsync {$ssh} --progress -rlpt --compress --omit-dir-times --delete {$this->sshUser}@{$this->host}:/tmp/ {$cwd}/test";
+            $command = "rsync {$ssh} --progress -rlpt --compress --omit-dir-times --delete {$this->sshUser}@{$this->host}:{$this->directory}/ {$cwd}/{$templateDir}";
         } else if ($this->action === 'push') {
-            $command = "rsync {$ssh} --progress -rlpt --compress --omit-dir-times --delete {$cwd}/test/ {$this->sshUser}@{$this->host}:/tmp";
+            $command = "rsync {$ssh} --progress -rlpt --compress --omit-dir-times --delete {$cwd}/{$templateDir}/ {$this->sshUser}@{$this->host}:{$this->directory}";
         }
+
+        /**
+         * Inform the user of the full command that is about to be executed
+         */
+        if (isset($command))
+            $this->io->text("Executing command: " . $command);
 
         /**
          * Make sure we have a command set

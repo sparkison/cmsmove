@@ -165,9 +165,9 @@ class Pull extends Command
         }
 
         // See if SSH key file is set
-        if (array_key_exists('keyfile', $environmentArgs)) {
+        if (array_key_exists('keyfile', $environmentArgs) && $environmentArgs->keyfile != "") {
             $this->sshKeyFile = $environmentArgs->keyfile;
-        } else if (array_key_exists('password', $environmentArgs)) { // See if SSH password is set
+        } else if (array_key_exists('password', $environmentArgs) && $environmentArgs->password != "") { // See if SSH password is set
             $this->sshPass = $environmentArgs->password;
         } else {
             $io->error("You must define either a SSH \"keyfile\" or SSH \"password\". We were unable to find either in your environment config. Please check for proper formatting and try again.");
