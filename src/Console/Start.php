@@ -47,7 +47,7 @@ class Start extends Command
         $ignoreFile = __DIR__ . '/../Config/rsync.ignore';
 
         if (!file_exists($configFile)) {
-            throw new InvalidArgumentException("No starter config file found for `$framework`. Please ensure there is a config.json file with configuration defaults to continue.");
+            $io->error("No starter config file found for `$framework`. Please ensure there is a config.json file with configuration defaults to continue.");
         }
 
         if (file_exists(getcwd() . '/moveConfig.json')) {
