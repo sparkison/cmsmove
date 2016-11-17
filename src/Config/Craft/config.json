@@ -2,7 +2,7 @@
   "type": "craft",
   "mappings": {
     "app": "craft",
-    "public": "public",
+    "www": "public",
     "config": "config",
     "plugins": "plugins",
     "templates": "templates",
@@ -21,7 +21,8 @@
     },
     "staging": {
       "host": "",
-      "root" : "/home/mysite/public_html",
+      "root" : "/home/mysite",
+      "public": "public_html",
       "user": "",
       "password": "",
       "keyfile": "",
@@ -34,7 +35,8 @@
     },
     "production": {
       "host": "",
-      "root" : "/home/mysite/public_html",
+      "root" : "/home/mysite",
+      "public": "public_html",
       "user": "",
       "password": "",
       "keyfile": "",

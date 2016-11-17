@@ -22,7 +22,7 @@ class Push extends Command
     private $destination;
     private $action = 'push';
     private $host;
-    private $directory;
+    private $root;
     private $sshUser;
     private $sshPass;
     private $sshKeyFile;
@@ -100,7 +100,7 @@ class Push extends Command
 
         // Already checked if class exists and configured required variables
         // Fire it up!
-        $config = new $this->classNamespace($io, $configVariables, $this->environment, $this->action, $this->host, $this->directory, $this->sshUser, $this->sshKeyFile, $this->sshPass, $this->sshPort, $this->database, $this->dbUser, $this->dbPass, $this->dbHost, $this->dbPort);
+        $config = new $this->classNamespace($io, $configVariables, $this->environment, $this->action, $this->host, $this->root, $this->public, $this->sshUser, $this->sshKeyFile, $this->sshPass, $this->sshPort, $this->database, $this->dbUser, $this->dbPass, $this->dbHost, $this->dbPort);
 
         // Check if the desired method exists
         if (method_exists($this->classNamespace, $this->destination)) {
@@ -154,11 +154,19 @@ class Push extends Command
             return;
         }
 
-        // See if directory is set
+        // See if root is set
         if (array_key_exists('root', $environmentArgs)) {
-            $this->directory = $environmentArgs->root;
+            $this->root = $environmentArgs->root;
         } else {
             $io->error("Unable to locate the \"root\" variable in your environment. Please check for proper formatting and try again.");
+            return;
+        }
+
+        // See if public is set
+        if (array_key_exists('public', $environmentArgs)) {
+            $this->root = $environmentArgs->public;
+        } else {
+            $io->error("Unable to locate the \"public\" variable in your environment. Please check for proper formatting and try again.");
             return;
         }
 

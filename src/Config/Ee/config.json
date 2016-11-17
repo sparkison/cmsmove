@@ -2,7 +2,7 @@
   "type": "ee",
   "mappings": {
     "app": "system",
-    "public": "public",
+    "www": "public",
     "config": "user/config",
     "plugins": {
       "files": "user/addons",
@@ -25,7 +25,8 @@
     },
     "staging": {
       "host": "",
-      "root" : "/home/mysite/public_html",
+      "root" : "/home/mysite",
+      "public": "public_html",
       "user": "",
       "password": "",
       "keyfile": "",
@@ -38,7 +39,8 @@
     },
     "production": {
       "host": "",
-      "root" : "/home/mysite/public_html",
+      "root" : "/home/mysite",
+      "public": "public_html",
       "user": "",
       "password": "",
       "keyfile": "",

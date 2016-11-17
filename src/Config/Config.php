@@ -62,11 +62,18 @@ abstract class Config
     protected $host;
 
     /**
-     * The "home" directory (e.g. /home/host_name/public_html)
+     * The "root" directory (e.g. "/home/host_name")
      *
      * @var
      */
-    protected $directory;
+    protected $root;
+
+    /**
+     * The "public" directory (e.g. "public_html"; this will be appended to the "root" variable to get the full path)
+     *
+     * @var
+     */
+    protected $public;
 
     /**
      * The host username
@@ -134,14 +141,15 @@ abstract class Config
      */
     protected $dbPort;
 
-    public function __construct($io, $configVars, $environment, $action, $host, $directory, $sshUser, $sshKeyFile, $sshPass, $sshPort = 22, $database, $dbUser, $dbPass, $dbHost = 'localhost', $dbPort = 3306)
+    public function __construct($io, $configVars, $environment, $action, $host, $root, $public, $sshUser, $sshKeyFile, $sshPass, $sshPort = 22, $database, $dbUser, $dbPass, $dbHost = 'localhost', $dbPort = 3306)
     {
         $this->io = $io;
         $this->configVars = $configVars;
         $this->environment = $environment;
         $this->action = $action;
         $this->host = $host;
-        $this->directory = $directory;
+        $this->root = $root;
+        $this->public = $public;
         $this->sshUser = $sshUser;
         $this->sshKeyFile = $sshKeyFile;
         $this->sshPass = $sshPass;
