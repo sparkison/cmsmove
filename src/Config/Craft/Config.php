@@ -160,8 +160,8 @@ class Config extends BaseConfig
 
         /* If here, connected successfully to remote host! */
         $command = "mysqldump --opt --add-drop-table --skip-comments --no-create-db --host={$this->dbHost} --user={$this->dbUser} --password={$this->dbPass} --port={$this->dbPort} --databases {$this->database} --result-file=$remoteDb";
-        $this->io->text("Executing remote command: " . $command);
-        $this->io->text($ssh->exec($command));
+        $this->io->text("<info>Executing remote command:</info> " . $command);
+        $ssh->exec($command);
 
         /* Copy the remote dump down to local and remove from remote */
         $scp = new Net_SCP($ssh);
@@ -172,8 +172,8 @@ class Config extends BaseConfig
 
         /* Remove the remote database dump */
         $command = "rm " . $remoteDb;
-        $this->io->text("Executing remote command: " . $command);
-        $this->io->text($ssh->exec($command));
+        $this->io->text("<info>Executing remote command:</info> " . $command);
+        $ssh->exec($command);
 
         /*************************    Determine what we're doing here    *************************/
 
@@ -199,7 +199,7 @@ class Config extends BaseConfig
             $this->io->note('Getting ready to push the local database to the remote host for import');
 
             /* Adapt the local database dump, and upload it */
-            $this->adaptDump($localToRemote);
+            $this->adaptDump($localDbDump);
 
             /* Copy to the remote host */
             if (!$scp->put($localToRemote,  $localDbDump))
@@ -209,11 +209,11 @@ class Config extends BaseConfig
 
             /* Import the database on the remote host */
             $command = "mysql --host={$this->dbHost} --user={$this->dbUser} --password={$this->dbPass} --port={$this->dbPort} --database={$this->database} < $localToRemote";
-            $this->io->text("Executing remote command: " . $command);
-            $this->io->text($ssh->exec($command));
+            $this->io->text("<info>Executing remote command:</info> " . $command);
+            $ssh->exec($command);
 
             /* Remove the local copy (since we imported it, no need to keep it, we have the original as a backup) */
-            $command = "rm $localToRemote";
+            $command = "rm $localDbDump";
             $this->exec($command, false);
         }
 
@@ -290,7 +290,7 @@ class Config extends BaseConfig
          * Execute it!
          */
         if (isset($command)) {
-            $this->io->text("Executing command: " . $command);
+            $this->io->text("<info>Executing local command:</info> " . $command);
             exec($command, $output, $exit_code);
         }
 
