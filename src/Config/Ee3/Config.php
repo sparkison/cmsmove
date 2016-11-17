@@ -1,13 +1,10 @@
 <?php
 
-namespace BMM\CMSMove\Config\Craft;
+namespace BMM\CMSMove\Config\Ee;
 
 use ZipArchive;
-use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use phpseclib\Net\SSH2 as Net_SSH2;
-use phpseclib\Crypt\RSA as Crypt_RSA;
 
 use BMM\CMSMove\Config\Config as BaseConfig;
 
@@ -32,17 +29,21 @@ class Config extends BaseConfig
 
     /**
      * Sync the plugins
+     * Need to sync both the plugin files and the plugin themes
      */
     public function plugins()
     {
         /* Get the plugins directory from the config file */
-        $pluginDir = $this->configVars->mappings->app . "/" . $this->configVars->mappings->plugins;
+        $pluginDir = $this->configVars->mappings->app . "/" . $this->configVars->mappings->plugins->files;
+        $pluginThemeDir = $this->configVars->mappings->www . "/" . $this->configVars->mappings->plugins->templates;
 
         /* Get the remote directory */
-        $remoteDir = $this->root . "/" . $pluginDir;
+        $remoteDirApp = $this->root . "/" . $pluginDir;
+        $remoteDirPublic = $this->root . "/" . $this->public . "/" . $this->configVars->mappings->plugins->templates;
 
-        /* Sync it! */
-        $this->syncIt($pluginDir, $remoteDir);
+        /* Sync it the plugins */
+        $this->syncIt($pluginDir, $remoteDirApp);
+        $this->syncIt($pluginThemeDir, $remoteDirPublic);
 
     } // END plugins() function
 
