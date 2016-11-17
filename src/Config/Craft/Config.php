@@ -165,8 +165,7 @@ class Config extends BaseConfig
 
         /* Copy the remote dump down to local and remove from remote */
         $scp = new Net_SCP($ssh);
-        if (!$scp->get($remoteDb, $remoteToLocal))
-        {
+        if (!$scp->get($remoteDb, $remoteToLocal)) {
             $this->io->error('Unable to download remote database dump');
         }
 
@@ -202,8 +201,7 @@ class Config extends BaseConfig
             $this->adaptDump($localDbDump);
 
             /* Copy to the remote host */
-            if (!$scp->put($localToRemote,  $localDbDump))
-            {
+            if (!$scp->put($localToRemote, $localDbDump)) {
                 $this->io->error('Unable to upload local database dump to remote host');
             }
 
@@ -323,17 +321,19 @@ class Config extends BaseConfig
      */
     private function adaptDump($file)
     {
+
         $contents = file_get_contents($file);
         $contents_arr = explode("\n", $contents);
         $contents = array();
         foreach ($contents_arr as $line) {
-            if ( (substr( $line, 0, 2 ) !== "--") && (substr( $line, 0, 3 ) !== "USE") ) {
+            if ((substr($line, 0, 2) !== "--") && (substr($line, 0, 3) !== "USE")) {
                 $contents[] = $line;
             }
         }
         $contents = implode("\n", $contents);
         file_put_contents($file, $contents);
-    }
+
+    } // END adaptDump() function
 
     /****************************************
      * END Sync helper functions
