@@ -14,7 +14,7 @@ namespace BMM\CMSMove\Config;
  *
  * Basic idea is to create a method for each action:
  *
- * "cmsmove pull <environment> <action>"
+ * "cmsmove push/pull <environment> <action>"
  */
 
 use ZipArchive;
@@ -69,7 +69,9 @@ abstract class Config
     protected $root;
 
     /**
-     * The "public" directory (e.g. "public_html"; this will be appended to the "root" variable to get the full path)
+     * The "public" directory (e.g. "public_html" or "www")
+     * This will be appended to the "root" variable to get the full path
+     *      e.g. $root . "/" . $public => "/home/host_name/public_html"
      *
      * @var
      */
