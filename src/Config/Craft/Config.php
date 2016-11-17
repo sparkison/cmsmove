@@ -47,7 +47,7 @@ class Config extends BaseConfig
     } // END plugins() function
 
     /**
-     * Sync the plugins
+     * Sync the config directory
      */
     public function config()
     {
@@ -96,11 +96,10 @@ class Config extends BaseConfig
 
     /**
      * Sync the user defined "custom" directories
+     * Will prompt user for the directory they wish to sync
      */
     public function custom()
     {
-
-
     } // END custom() function
 
 
