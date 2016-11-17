@@ -248,9 +248,7 @@ class Config extends BaseConfig
         /*************************    All done!    *************************/
 
         $this->io->success("Completed {$this->action}ing database!");
-
-        // echo $ssh->getLog();
-
+        
     } // END database() function
 
     /****************************************
