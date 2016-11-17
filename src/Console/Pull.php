@@ -23,6 +23,7 @@ class Pull extends Command
     private $action = 'pull';
     private $host;
     private $root;
+    private $public;
     private $sshUser;
     private $sshKeyFile;
     private $sshPass;
@@ -158,7 +159,7 @@ class Pull extends Command
 
         // See if public is set
         if (array_key_exists('public', $environmentArgs)) {
-            $this->root = $environmentArgs->public;
+            $this->public = $environmentArgs->public;
         } else {
             $io->error("Unable to locate the \"public\" variable in your environment. Please check for proper formatting and try again.");
             return;

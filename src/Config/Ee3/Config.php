@@ -109,20 +109,73 @@ class Config extends BaseConfig
      */
     public function database()
     {
-        //        $ssh = new Net_SSH2('example.com');
-//        if ($ssh->login('root', 'password')) {
-//            $this->io->success('Password Login Success!!');
-//        }
-//
-//        $key = new Crypt_RSA();
-//        $key->loadKey(file_get_contents('/Users/ME/.ssh/id_rsa'));
-//
-//        // echo $ssh->exec('pwd');
-//        // echo $ssh->getLog();
-//
-//        if ($ssh->login('root', $key)) {
-//            $this->io->success('Login with keyfile success!!');
-//        }
+        /* Get the backup folder */
+        $backupDir = getcwd() . '/db_backups';
+
+        /* See if a folder exists for the database dumps, if not, create it */
+        if (!file_exists($backupDir)) {
+            mkdir($backupDir);
+        }
+
+        /* Inform user of command we're about to perform */
+        $title = ucfirst($this->action) . "ing database...";
+        $this->io->title($title);
+
+        /* Create a timestamp for uniqueness */
+        $timestamp = date('Y.m.d_H.i.s');
+
+        /* Set variables for the local and remote database dumps for easy reference */
+        $localDbDump = $backupDir . "/local_db_" . $timestamp . ".sql";
+        $remoteDb = "/tmp/" . $this->environment . "_db_" . $timestamp . ".sql";
+
+        /* Get the local DB info */
+        $localDb = $this->configVars->environments->local;
+
+        /*************************    Make local and remote backups    *************************/
+
+        /* Step 1. make copy of local database */
+        $command = "mysqldump --opt --add-drop-table --skip-comments --no-create-db --user={$localDb->dbUser} --password={$localDb->dbPass} --port={$localDb->dbPort} --databases {$localDb->db} --result-file=$localDbDump";
+
+        /* Execute the command */
+        $this->exec($command, false);
+
+        /* Step 2. connect to remote host and make copy of database */
+        $ssh = new Net_SSH2($this->host);
+        /* Enable quite mode to prevent printing of "stdin: is not a tty" line in the output stream */
+        $ssh->enableQuietMode();
+        if (!empty($this->sshKeyFile)) {
+            $key = new Crypt_RSA();
+            $key->loadKey(file_get_contents($this->sshKeyFile));
+            if (!$ssh->login('root', $key)) {
+                $this->io->error('Unable to login into remote host using ssh key');
+            }
+        } else {
+            if (!$ssh->login($this->sshUser, $this->sshPass)) {
+                $this->io->error('Unable to login into remote host using password');
+            }
+        }
+
+        /* If here, connected successfully to remote host! */
+        $command = "mysqldump --opt --add-drop-table --skip-comments --no-create-db --user={$this->dbUser} --password={$this->dbPass} --port={$this->dbPort} --databases {$this->database} --result-file=$remoteDb";
+        $this->io->text("Executing remote command: " . $command);
+        $this->io->text($ssh->exec($command));
+
+        /* Copy the remote dump down to local and remove from remote */
+        $scp = new Net_SCP($ssh);
+        if (!$scp->get($remoteDb, $backupDir . "/" . $this->environment . "_db_" . $timestamp . ".sql"))
+        {
+            $this->io->error('Unable to download remote database dump');
+        }
+
+        /* Remove the remote database dump */
+        $command = "rm " . $remoteDb;
+        $this->io->text("Executing remote command: " . $command);
+        $this->io->text($ssh->exec($command));
+
+        $this->io->success("Completed {$this->action}ing database!");
+
+        // echo $ssh->getLog();
+
     } // END database() function
 
 
@@ -170,6 +223,22 @@ class Config extends BaseConfig
         }
 
         /**
+         * Exec the command
+         */
+        $this->exec($command);
+
+    } // END syncIt() function
+
+    /**
+     * Issue the exec command and show output
+     * Will also show errors if any received
+     *
+     * @param $command
+     * @param bool $success_msg
+     */
+    private function exec($command, $success_msg = true)
+    {
+        /**
          * Make sure we have a command set
          * Inform the user of the full command that is about to be executed
          * Execute it!
@@ -193,12 +262,13 @@ class Config extends BaseConfig
          * Else, show a success message
          */
         if (isset($exit_code) && $exit_code == 0) {
-            $this->io->success(ucfirst($this->action) . " command executed successfully!");
+            if ($success_msg)
+                $this->io->success(ucfirst($this->action) . " command executed successfully!");
         } else {
             $this->io->error("There was an error executing the " . ucfirst($this->action) . " command. Please check your config and try again");
         }
 
-    } // END syncIt() function
+    } // END exec() fucntion
 
     /****************************************
      * END Sync helper functions
