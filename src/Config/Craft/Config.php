@@ -19,19 +19,13 @@ class Config extends BaseConfig
      */
     public function templates()
     {
-        /**
-         * Get the template directory from the config file
-         */
+        /* Get the template directory from the config file */
         $templateDir = $this->configVars->mappings->app . "/" . $this->configVars->mappings->templates;
 
-        /**
-         * Get the remote directory
-         */
+        /* Get the remote directory */
         $remoteDir = $this->root . "/" . $templateDir;
 
-        /**
-         * Sync it!
-         */
+        /* Sync it! */
         $this->syncIt($templateDir, $remoteDir);
 
     } // END templates() function
@@ -41,19 +35,13 @@ class Config extends BaseConfig
      */
     public function plugins()
     {
-        /**
-         * Get the plugins directory from the config file
-         */
+        /* Get the plugins directory from the config file */
         $pluginDir = $this->configVars->mappings->app . "/" . $this->configVars->mappings->plugins;
 
-        /**
-         * Get the remote directory
-         */
+        /* Get the remote directory */
         $remoteDir = $this->root . "/" . $pluginDir;
 
-        /**
-         * Sync it!
-         */
+        /* Sync it! */
         $this->syncIt($pluginDir, $remoteDir);
 
     } // END plugins() function
@@ -63,19 +51,13 @@ class Config extends BaseConfig
      */
     public function config()
     {
-        /**
-         * Get the config directory from the config file
-         */
+        /* Get the config directory from the config file */
         $configDir = $this->configVars->mappings->app . "/" . $this->configVars->mappings->config;
 
-        /**
-         * Get the remote directory
-         */
+        /* Get the remote directory */
         $remoteDir = $this->root . "/" . $configDir;
 
-        /**
-         * Sync it!
-         */
+        /* Sync it! */
         $this->syncIt($configDir, $remoteDir);
 
     } // END config() function
@@ -85,19 +67,13 @@ class Config extends BaseConfig
      */
     public function app()
     {
-        /**
-         * Get the app directory from the config file
-         */
+        /* Get the app directory from the config file */
         $appDir = $this->configVars->mappings->app;
 
-        /**
-         * Get the remote directory
-         */
+        /* Get the remote directory */
         $remoteDir = $this->root . "/" . $appDir;
 
-        /**
-         * Sync it!
-         */
+        /* Sync it! */
         $this->syncIt($appDir, $remoteDir);
 
     } // END app() function
@@ -107,22 +83,25 @@ class Config extends BaseConfig
      */
     public function www()
     {
-        /**
-         * Get the public directory from the config file
-         */
+        /* Get the public directory from the config file */
         $publicDir = $this->configVars->mappings->public;
 
-        /**
-         * Get the remote directory
-         */
+        /* Get the remote directory */
         $remoteDir = $this->root . "/" . $this->public;
 
-        /**
-         * Sync it!
-         */
+        /* Sync it! */
         $this->syncIt($publicDir, $remoteDir);
 
-    } // END app() function
+    } // END www() function
+
+    /**
+     * Sync the user defined "custom" directories
+     */
+    public function custom()
+    {
+
+
+    } // END custom() function
 
 
     /**

@@ -163,7 +163,7 @@ class Push extends Command
         }
 
         // See if public is set
-        if (array_key_exists('public', $environmentArgs)) {
+        if (array_key_exists('www', $environmentArgs)) {
             $this->root = $environmentArgs->public;
         } else {
             $io->error("Unable to locate the \"public\" variable in your environment. Please check for proper formatting and try again.");
