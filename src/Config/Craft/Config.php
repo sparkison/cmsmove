@@ -50,16 +50,12 @@ class Config extends BaseConfig
         }
 
         /**
-         * Inform the user of the full command that is about to be executed
-         */
-        if (isset($command))
-            $this->io->text("Executing command: " . $command);
-
-        /**
          * Make sure we have a command set
-         * If so, execute it
+         * Inform the user of the full command that is about to be executed
+         * Execute it!
          */
         if (isset($command)) {
+            $this->io->text("Executing command: " . $command);
             exec($command, $output, $exit_code);
         }
 
