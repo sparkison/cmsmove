@@ -126,7 +126,10 @@ class Config extends BaseConfig
 
         /* Set variables for the local and remote database dumps for easy reference */
         $localDbDump = $backupDir . "/local_db_" . $timestamp . ".sql";
+        $localToRemote = "/tmp/local_db_" . $timestamp . ".sql";
+
         $remoteDb = "/tmp/" . $this->environment . "_db_" . $timestamp . ".sql";
+        $remoteToLocal = $backupDir . "/" . $this->environment . "_db_" . $timestamp . ".sql";
 
         /* Get the local DB info */
         $localDb = $this->configVars->environments->local;
@@ -134,7 +137,7 @@ class Config extends BaseConfig
         /*************************    Make local and remote backups    *************************/
 
         /* Step 1. make copy of local database */
-        $command = "mysqldump --opt --add-drop-table --skip-comments --no-create-db --user={$localDb->dbUser} --password={$localDb->dbPass} --port={$localDb->dbPort} --databases {$localDb->db} --result-file=$localDbDump";
+        $command = "mysqldump --opt --add-drop-table --skip-comments --no-create-db --host={$localDb->dbHost} --user={$localDb->dbUser} --password={$localDb->dbPass} --port={$localDb->dbPort} --databases {$localDb->db} --result-file=$localDbDump";
 
         /* Execute the command */
         $this->exec($command, false);
@@ -156,36 +159,62 @@ class Config extends BaseConfig
         }
 
         /* If here, connected successfully to remote host! */
-        $command = "mysqldump --opt --add-drop-table --skip-comments --no-create-db --user={$this->dbUser} --password={$this->dbPass} --port={$this->dbPort} --databases {$this->database} --result-file=$remoteDb";
-        $this->io->text("Executing remote command: " . $command);
-        $this->io->text($ssh->exec($command));
+        $command = "mysqldump --opt --add-drop-table --skip-comments --no-create-db --host={$this->dbHost} --user={$this->dbUser} --password={$this->dbPass} --port={$this->dbPort} --databases {$this->database} --result-file=$remoteDb";
+        $this->io->text("<info>Executing remote command:</info> " . $command);
+        $ssh->exec($command);
 
         /* Copy the remote dump down to local and remove from remote */
         $scp = new Net_SCP($ssh);
-        if (!$scp->get($remoteDb, $backupDir . "/" . $this->environment . "_db_" . $timestamp . ".sql"))
+        if (!$scp->get($remoteDb, $remoteToLocal))
         {
             $this->io->error('Unable to download remote database dump');
         }
 
         /* Remove the remote database dump */
         $command = "rm " . $remoteDb;
-        $this->io->text("Executing remote command: " . $command);
-        $this->io->text($ssh->exec($command));
+        $this->io->text("<info>Executing remote command:</info> " . $command);
+        $ssh->exec($command);
 
         /*************************    Determine what we're doing here    *************************/
 
         /* See if we're issuing a push or a pull */
         if ($this->action === 'pull') {
             $this->io->note('Getting ready to import the remote database');
-            /* Import the remote database */
+
+            /* Adapt the remote database dump, and import it */
+            $this->adaptDump($remoteToLocal);
+
+            /* Import it */
+            $command = "mysql --host={$localDb->dbHost} --user={$localDb->dbUser} --password={$localDb->dbPass} --port={$localDb->dbPort} --database={$localDb->db} < $remoteToLocal";
+            $this->exec($command, false);
+
+            /* Remove the remote copy (since we imported it, no need to keep it, we have the original as a backup) */
+            $command = "rm $remoteToLocal";
+            $this->exec($command, false);
+
+            /* All done here! */
 
         } else {
             /* Copy the local database to the remote host */
             $this->io->note('Getting ready to push the local database to the remote host for import');
-            if (!$scp->put("/tmp/local_db_" . $timestamp . ".sql",  $localDbDump))
+
+            /* Adapt the local database dump, and upload it */
+            $this->adaptDump($localDbDump);
+
+            /* Copy to the remote host */
+            if (!$scp->put($localToRemote,  $localDbDump))
             {
                 $this->io->error('Unable to upload local database dump to remote host');
             }
+
+            /* Import the database on the remote host */
+            $command = "mysql --host={$this->dbHost} --user={$this->dbUser} --password={$this->dbPass} --port={$this->dbPort} --database={$this->database} < $localToRemote";
+            $this->io->text("<info>Executing remote command:</info> " . $command);
+            $ssh->exec($command);
+
+            /* Remove the local copy (since we imported it, no need to keep it, we have the original as a backup) */
+            $command = "rm $localDbDump";
+            $this->exec($command, false);
         }
 
         /*************************    All done!    *************************/
