@@ -172,6 +172,24 @@ class Config extends BaseConfig
         $this->io->text("Executing remote command: " . $command);
         $this->io->text($ssh->exec($command));
 
+        /*************************    Determine what we're doing here    *************************/
+
+        /* See if we're issuing a push or a pull */
+        if ($this->action === 'pull') {
+            $this->io->note('Getting ready to import the remote database');
+            /* Import the remote database */
+
+        } else {
+            /* Copy the local database to the remote host */
+            $this->io->note('Getting ready to push the local database to the remote host for import');
+            if (!$scp->put("/tmp/local_db_" . $timestamp . ".sql",  $localDbDump))
+            {
+                $this->io->error('Unable to upload local database dump to remote host');
+            }
+        }
+
+        /*************************    All done!    *************************/
+
         $this->io->success("Completed {$this->action}ing database!");
 
         // echo $ssh->getLog();
@@ -180,7 +198,7 @@ class Config extends BaseConfig
 
 
     /****************************************
-     * BEGIN Sync helper functions
+     * BEGIN helper functions
      ****************************************/
 
     /**
@@ -268,7 +286,26 @@ class Config extends BaseConfig
             $this->io->error("There was an error executing the " . ucfirst($this->action) . " command. Please check your config and try again");
         }
 
-    } // END exec() fucntion
+    } // END exec() function
+
+    /**
+     * Adapt the SQL dump file
+     *
+     * @param $file
+     */
+    private function adaptDump($file)
+    {
+        $contents = file_get_contents($file);
+        $contents_arr = explode("\n", $contents);
+        $contents = array();
+        foreach ($contents_arr as $line) {
+            if ( (substr( $line, 0, 2 ) !== "--") && (substr( $line, 0, 3 ) !== "USE") ) {
+                $contents[] = $line;
+            }
+        }
+        $contents = implode("\n", $contents);
+        file_put_contents($file, $contents);
+    }
 
     /****************************************
      * END Sync helper functions
