@@ -86,22 +86,24 @@ class Pull extends Command
         $this->environment = $input->getArgument('environment');
         $this->destination = $input->getArgument('destination');
         $this->getVariables($configVariables, $io);
-        $this->doPull($configVariables, $io);
+        $this->doPull($input, $output, $configVariables, $io);
 
     }
 
     /**
      * Start it up!
      *
-     * @param $configVariables
-     * @param $io
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @param Object $configVariables
+     * @param SymfonyStyle $io
      */
-    private function doPull($configVariables, $io)
+    private function doPull(InputInterface $input, OutputInterface $output, $configVariables, SymfonyStyle $io)
     {
 
         // Already checked if class exists and configured required variables
         // Fire it up!
-        $config = new $this->classNamespace($io, $configVariables, $this->environment, $this->action, $this->host, $this->root, $this->public, $this->sshUser, $this->sshKeyFile, $this->sshPass, $this->sshPort, $this->database, $this->dbUser, $this->dbPass, $this->dbHost, $this->dbPort);
+        $config = new $this->classNamespace($input, $output, $io, $configVariables, $this->environment, $this->action, $this->host, $this->root, $this->public, $this->sshUser, $this->sshKeyFile, $this->sshPass, $this->sshPort, $this->database, $this->dbUser, $this->dbPass, $this->dbHost, $this->dbPort);
 
         // Check if the desired method exists
         if (method_exists($this->classNamespace, $this->destination)) {

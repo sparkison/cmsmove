@@ -2,14 +2,11 @@
 
 namespace BMM\CMSMove\Config\Craft;
 
-use ZipArchive;
-use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\Question;
+use Symfony\Component\Console\Helper\QuestionHelper;
 use phpseclib\Net\SCP as Net_SCP;
 use phpseclib\Net\SSH2 as Net_SSH2;
 use phpseclib\Crypt\RSA as Crypt_RSA;
-
 use BMM\CMSMove\Config\Config as BaseConfig;
 
 class Config extends BaseConfig
@@ -27,7 +24,7 @@ class Config extends BaseConfig
         $remoteDir = $this->root . "/" . $templateDir;
 
         /* Sync it! */
-        $this->syncIt($templateDir, $remoteDir);
+        $this->syncIt($templateDir, $remoteDir, "templates");
 
     } // END templates() function
 
@@ -43,7 +40,7 @@ class Config extends BaseConfig
         $remoteDir = $this->root . "/" . $pluginDir;
 
         /* Sync it! */
-        $this->syncIt($pluginDir, $remoteDir);
+        $this->syncIt($pluginDir, $remoteDir, "plugins");
 
     } // END plugins() function
 
@@ -59,7 +56,7 @@ class Config extends BaseConfig
         $remoteDir = $this->root . "/" . $configDir;
 
         /* Sync it! */
-        $this->syncIt($configDir, $remoteDir);
+        $this->syncIt($configDir, $remoteDir, "config");
 
     } // END config() function
 
@@ -75,7 +72,7 @@ class Config extends BaseConfig
         $remoteDir = $this->root . "/" . $appDir;
 
         /* Sync it! */
-        $this->syncIt($appDir, $remoteDir);
+        $this->syncIt($appDir, $remoteDir, "app");
 
     } // END app() function
 
@@ -91,7 +88,7 @@ class Config extends BaseConfig
         $remoteDir = $this->root . "/" . $this->public;
 
         /* Sync it! */
-        $this->syncIt($publicDir, $remoteDir);
+        $this->syncIt($publicDir, $remoteDir, "public");
 
     } // END www() function
 
@@ -101,6 +98,36 @@ class Config extends BaseConfig
      */
     public function custom()
     {
+
+        /* Get the custom directory array */
+        $customDirs = $this->configVars->mappings->custom;
+
+        /* prompt user for the desired custom directory to sync */
+        $helper = new QuestionHelper();
+
+        $question = new Question('<comment>Please enter the name of the custom directory:</comment> ', '');
+        $customDir = $helper->ask($this->input, $this->output, $question);
+
+        if (property_exists($customDirs, $customDir)) {
+
+            /* Entered a valid custom directory, let's sync it! */
+            $title = ucfirst($this->action) . "ing the custom directory: \"$customDir\"...";
+            $this->io->title($title);
+
+            /*
+                Get the remote/local directory details
+                Assuming a full path here
+                Will start from the current working directory locally, and the root directory remotely
+            */
+            $localDir = $customDirs->{$customDir};
+            $remoteDir = $this->root . "/" . $localDir;
+            $this->syncIt($localDir, $remoteDir, "custom");
+
+        } else {
+            /* Didn't find the custom directory entered, inform the user and show the directory so they know */
+            $this->io->error("Unable to find a key for the directory you entered: \"$customDir\"");
+        }
+
     } // END custom() function
 
 
@@ -230,10 +257,11 @@ class Config extends BaseConfig
     /**
      * Use rsync to push/pull using the select source
      *
-     * @param $source
-     * @param $dest
+     * @param $local
+     * @param $remote
+     * @param string $syncing
      */
-    private function syncIt($source, $dest)
+    private function syncIt($local, $remote, $syncing = "")
     {
         $cwd = getcwd();
         $ssh = "";
@@ -241,8 +269,8 @@ class Config extends BaseConfig
         /**
          * Remove any trailing slashes from source/dest as it could mess up the sync
          */
-        $source = rtrim($source, "/");
-        $dest = rtrim($dest, "/");
+        $local = rtrim($local, "/");
+        $remote = rtrim($remote, "/");
 
         /**
          * Determine if using SSH password, or keyfile
@@ -256,14 +284,14 @@ class Config extends BaseConfig
         /**
          * Inform user of command we're about to perform
          */
-        $title = ucfirst($this->action) . "ing templates...";
+        $title = ucfirst($this->action) . "ing $syncing...";
         $this->io->title($title);
 
         // Determine if push or pull
         if ($this->action === 'pull') {
-            $command = "rsync {$ssh} --progress -rlpt --compress --omit-dir-times --delete {$this->sshUser}@{$this->host}:/{$dest}/ {$cwd}/{$source}";
+            $command = "rsync {$ssh} --progress -rlpt --compress --omit-dir-times --delete {$this->sshUser}@{$this->host}:/{$remote}/ {$cwd}/{$local}";
         } else if ($this->action === 'push') {
-            $command = "rsync {$ssh} --progress -rlpt --compress --omit-dir-times --delete {$cwd}/{$source}/ {$this->sshUser}@{$this->host}:/{$dest}";
+            $command = "rsync {$ssh} --progress -rlpt --compress --omit-dir-times --delete {$cwd}/{$local}/ {$this->sshUser}@{$this->host}:/{$remote}";
         }
 
         /**
