@@ -21,6 +21,10 @@ Automated deployment for popular content management systems
 
 Further instructions to come...
 
+## Updating
+
+Simply issue the following command: `composer global update sparkison/cmsmove`
+
 ### Contributing
 
 Pull requests, contributions, issues and feature requests are always welcome... Although I would prefer a pull request for new features... ;)
