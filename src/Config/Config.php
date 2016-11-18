@@ -3,7 +3,7 @@
 namespace BMM\CMSMove\Config;
 
 /**
- * Abstract class to define the constructor and variables that will be common among all CMS
+ * @documentation Abstract class to define the constructor and variables that will be common among all CMS
  * Methods are the "actions" that can be taken with a "push" or a "pull"
  *
  * Be sure to extend this class for any custom CMS integration. The bootstrap config should also be included
@@ -24,10 +24,11 @@ namespace BMM\CMSMove\Config;
  *
  */
 
-use ZipArchive;
-use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Helper\ProgressBar;
+
+use phpseclib\Net\SCP as Net_SCP;
+use phpseclib\Net\SSH2 as Net_SSH2;
+use phpseclib\Crypt\RSA as Crypt_RSA;
 
 abstract class Config
 {
