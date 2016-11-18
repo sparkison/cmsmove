@@ -253,7 +253,7 @@ class Config extends BaseConfig
      ****************************************/
 
     /**
-     * Use rsync to push/pull using the select source
+     * Use rsync to push/pull using the selected local and remote directories
      *
      * @param $local
      * @param $remote
@@ -352,7 +352,7 @@ class Config extends BaseConfig
         $contents_arr = explode("\n", $contents);
         $contents = array();
         foreach ($contents_arr as $line) {
-            if ((substr($line, 0, 2) !== "--") && (substr($line, 0, 3) !== "USE")) {
+            if ( !((substr($line, 0, 2) === "--") || (substr($line, 0, 3) === "USE")) ) {
                 $contents[] = $line;
             }
         }
