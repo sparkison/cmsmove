@@ -231,7 +231,7 @@ class Config extends BaseConfig
 
         /* See if we're issuing a push or a pull */
         if ($this->action === 'pull') {
-            $this->io->note('Getting ready to import the remote database');
+            $this->io->text('<info>Getting ready to import the remote database</info>');
 
             /* Adapt the remote database dump, and import it */
             $this->adaptDump($remoteToLocal);
@@ -250,14 +250,14 @@ class Config extends BaseConfig
             $command = "rm $remoteToLocal";
             $this->exec($command, false);
 
-            /* Increment progress bar */
-            $progress->advance(20);
+            /* End the progress bar */
+            $progress->finish();
 
             /* All done here! */
 
         } else {
             /* Copy the local database to the remote host */
-            $this->io->note('Getting ready to push the local database to the remote host for import');
+            $this->io->text('<info>Getting ready to push the local database to the remote host for import</info>');
 
             /* Adapt the local database dump, and upload it */
             $this->adaptDump($localDbDump);
@@ -278,8 +278,8 @@ class Config extends BaseConfig
             $this->io->text("<info>Executing remote command:</info> " . $command);
             $ssh->exec($command);
 
-            /* Increment progress bar */
-            $progress->advance(30);
+            /* End the progress bar */
+            $progress->finish();
 
             /* Remove the local copy (since we imported it, no need to keep it, we have the original as a backup) */
             $command = "rm $localDbDump";
@@ -288,8 +288,6 @@ class Config extends BaseConfig
 
         /*************************    All done!    *************************/
 
-        /* End the progress bar */
-        $progress->finish();
         $this->io->success("Completed {$this->action}ing database!");
 
     } // END database() function
