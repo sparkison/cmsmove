@@ -433,9 +433,9 @@ abstract class Config
 
         // Determine if push or pull
         if ($this->action === 'pull') {
-            $command = "rsync {$ssh} --progress -rlpt --compress --omit-dir-times --delete {$this->sshUser}@{$this->host}:/{$remote}/ {$cwd}/{$local}";
+            $command = "rsync {$ssh} --progress -rlpt --compress --omit-dir-times --delete --exclude-from={$cwd}/rsync.ignore {$this->sshUser}@{$this->host}:/{$remote}/ {$cwd}/{$local}";
         } else if ($this->action === 'push') {
-            $command = "rsync {$ssh} --progress -rlpt --compress --omit-dir-times --delete {$cwd}/{$local}/ {$this->sshUser}@{$this->host}:/{$remote}";
+            $command = "rsync {$ssh} --progress -rlpt --compress --omit-dir-times --delete --exclude-from={$cwd}/rsync.ignore {$cwd}/{$local}/ {$this->sshUser}@{$this->host}:/{$remote}";
         }
 
         /**
