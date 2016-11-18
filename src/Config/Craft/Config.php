@@ -90,42 +90,4 @@ class Config extends BaseConfig
 
     } // END www() function
 
-    /**
-     * Sync the user defined "custom" directories
-     * Will prompt user for the directory they wish to sync
-     */
-    public function custom()
-    {
-
-        /* Get the custom directory array */
-        $customDirs = $this->configVars->mappings->custom;
-
-        /* prompt user for the desired custom directory to sync */
-        $helper = new QuestionHelper();
-
-        $question = new Question('<comment>Please enter the name of the custom directory:</comment> ', '');
-        $customDir = $helper->ask($this->input, $this->output, $question);
-
-        if (property_exists($customDirs, $customDir)) {
-
-            /* Entered a valid custom directory, let's sync it! */
-            $title = ucfirst($this->action) . "ing the custom directory: \"$customDir\"...";
-            $this->io->title($title);
-
-            /*
-                Get the remote/local directory details
-                Assuming a full path here
-                Will start from the current working directory locally, and the root directory remotely
-            */
-            $localDir = $customDirs->{$customDir};
-            $remoteDir = $this->root . "/" . $localDir;
-            $this->syncIt($localDir, $remoteDir, "custom");
-
-        } else {
-            /* Didn't find the custom directory entered, inform the user and show the directory so they know */
-            $this->io->error("Unable to find a key for the directory you entered: \"$customDir\"");
-        }
-
-    } // END custom() function
-
 }

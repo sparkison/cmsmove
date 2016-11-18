@@ -187,6 +187,54 @@ abstract class Config
     }
 
     /**
+     * Sync the user defined "custom" directories
+     * Will prompt user for the directory they wish to sync
+     */
+    public function custom()
+    {
+
+        /* Get the custom directory array */
+        $customDirs = $this->configVars->mappings->custom;
+
+        /* prompt user for the desired custom directory to sync */
+        $helper = new QuestionHelper();
+
+        $question = new Question('<comment>Please enter the name of the custom directory:</comment> ', '');
+        $customDir = $helper->ask($this->input, $this->output, $question);
+
+        if (property_exists($customDirs, $customDir)) {
+
+            /* Entered a valid custom directory, let's sync it! */
+            $title = ucfirst($this->action) . "ing the custom directory: \"$customDir\"...";
+            $this->io->title($title);
+
+            /*
+             * Need to determine if this is a public or root level item
+             * Each custom directory requires two keys
+             * 1. type - either "root" or "public"
+             * 2. directory - the directory we're pushing/pulling
+             */
+            $baseDir = $customDirs->{$customDir}->type;
+            if ($baseDir === 'public') {
+                $localDir = $this->configVars->mappings->www . "/" . $customDirs->{$customDir}->directory;
+                $remoteDir = $this->public . "/" . $customDirs->{$customDir}->directory;
+            } else if($baseDir === 'root') {
+                $localDir = $customDirs->{$customDir}->directory;
+                $remoteDir = $this->root . "/" . $customDirs->{$customDir}->directory;
+            } else {
+                $this->io->error("You don't have a \"type\" set in your custom directory config");
+            }
+
+            $this->syncIt($localDir, $remoteDir, "custom");
+
+        } else {
+            /* Didn't find the custom directory entered, inform the user and show the directory so they know */
+            $this->io->error("Unable to find a key for the directory you entered: \"$customDir\"");
+        }
+
+    } // END custom() function
+
+    /**
      * Sync the database
      */
     public function database()

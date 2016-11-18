@@ -11,7 +11,10 @@
     "images": "images",
     "templates": "user/templates",
     "custom": {
-      "uploads": "uploads"
+      "uploads": {
+        "type": "public",
+        "directory": "uploads"
+      }
     }
   },
   "environments": {
