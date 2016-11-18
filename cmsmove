@@ -7,7 +7,11 @@ use BMM\CMSMove\Console\Start;
 use BMM\CMSMove\Console\Push;
 use BMM\CMSMove\Console\Pull;
 
-require __DIR__.'/vendor/autoload.php';
+if(file_exists(__DIR__.'/vendor') { // Require locally for dev
+    require __DIR__.'/vendor/autoload.php';
+} else { // Require globally for global install
+    require __DIR__.'/../../autoload.php';
+}
 
 $app = new Application('CMS Move', '@package_version@');
 $app->add(new Start);
