@@ -2,10 +2,10 @@
 Automated deployment for popular content management systems
 
 ## Requirements
-- (Composer)[https://getcomposer.org/]
+- [Composer](https://getcomposer.org/)
 
 ## Installation instructions
-1. Download the latest `cmsmove.phar` release from the (releases tab)[https://github.com/sparkison/cmsmove/releases]
+1. Download the latest `cmsmove.phar` release from the [releases tab](https://github.com/sparkison/cmsmove/releases)
 2. Copy the file to your composer **bin** folder
     1. `mv cmsmove.phar ~/.composer/vendor/bin/cmsmove`
 2. Make sure it's executable
