@@ -1,3 +1,5 @@
+![version](https://img.shields.io/github/tag/strongloop/express.svg)
+
 # cmsmove
 Automated deployment for popular content management systems
 
