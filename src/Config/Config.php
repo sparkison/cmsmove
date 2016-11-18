@@ -219,6 +219,10 @@ abstract class Config
                 $localDir = $this->configVars->mappings->www . "/" . $customDirs->{$customDir}->directory;
                 $remoteDir = $this->public . "/" . $customDirs->{$customDir}->directory;
             } else if($baseDir === 'root') {
+                /*
+                 * If root, locally start from the current working directory (will be an absolute path to the project root)
+                 * Remotely, will be the absolute path to the root directory set within the environment config variables
+                 */
                 $localDir = $customDirs->{$customDir}->directory;
                 $remoteDir = $this->root . "/" . $customDirs->{$customDir}->directory;
             } else {
