@@ -7,7 +7,7 @@ use BMM\CMSMove\Console\Start;
 use BMM\CMSMove\Console\Push;
 use BMM\CMSMove\Console\Pull;
 
-if(file_exists(__DIR__.'/vendor') { // Require locally for dev
+if(file_exists(__DIR__.'/vendor')) { // Require locally for dev
     require __DIR__.'/vendor/autoload.php';
 } else { // Require globally for global install
     require __DIR__.'/../../autoload.php';
