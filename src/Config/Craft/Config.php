@@ -4,9 +4,12 @@ namespace BMM\CMSMove\Config\Craft;
 
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Helper\QuestionHelper;
+use Symfony\Component\Console\Helper\ProgressBar;
+
 use phpseclib\Net\SCP as Net_SCP;
 use phpseclib\Net\SSH2 as Net_SSH2;
 use phpseclib\Crypt\RSA as Crypt_RSA;
+
 use BMM\CMSMove\Config\Config as BaseConfig;
 
 class Config extends BaseConfig
@@ -148,6 +151,10 @@ class Config extends BaseConfig
         $title = ucfirst($this->action) . "ing database...";
         $this->io->title($title);
 
+        /* Start a progress bar */
+        $progress = new ProgressBar($this->output, 80);
+        $progress->start();
+
         /* Create a timestamp for uniqueness */
         $timestamp = date('Y.m.d_H.i.s');
 
@@ -169,6 +176,9 @@ class Config extends BaseConfig
         /* Execute the command */
         $this->exec($command, false);
 
+        /* Increment progress bar */
+        $progress->advance(5);
+
         /* Step 2. connect to remote host and make copy of database */
         $ssh = new Net_SSH2($this->host);
         /* Enable quite mode to prevent printing of "stdin: is not a tty" line in the output stream */
@@ -185,10 +195,16 @@ class Config extends BaseConfig
             }
         }
 
+        /* Increment progress bar */
+        $progress->advance(10);
+
         /* If here, connected successfully to remote host! */
         $command = "mysqldump --opt --add-drop-table --skip-comments --no-create-db --host={$this->dbHost} --user={$this->dbUser} --password={$this->dbPass} --port={$this->dbPort} --databases {$this->database} --result-file=$remoteDb";
         $this->io->text("<info>Executing remote command:</info> " . $command);
         $ssh->exec($command);
+
+        /* Increment progress bar */
+        $progress->advance(10);
 
         /* Copy the remote dump down to local and remove from remote */
         $scp = new Net_SCP($ssh);
@@ -196,10 +212,16 @@ class Config extends BaseConfig
             $this->io->error('Unable to download remote database dump');
         }
 
+        /* Increment progress bar */
+        $progress->advance(5);
+
         /* Remove the remote database dump */
         $command = "rm " . $remoteDb;
         $this->io->text("<info>Executing remote command:</info> " . $command);
         $ssh->exec($command);
+
+        /* Increment progress bar */
+        $progress->advance(5);
 
         /*************************    Determine what we're doing here    *************************/
 
@@ -210,13 +232,22 @@ class Config extends BaseConfig
             /* Adapt the remote database dump, and import it */
             $this->adaptDump($remoteToLocal);
 
+            /* Increment progress bar */
+            $progress->advance(5);
+
             /* Import it */
             $command = "mysql --host={$localDb->dbHost} --user={$localDb->dbUser} --password={$localDb->dbPass} --port={$localDb->dbPort} --database={$localDb->db} < $remoteToLocal";
             $this->exec($command, false);
 
+            /* Increment progress bar */
+            $progress->advance(20);
+
             /* Remove the remote copy (since we imported it, no need to keep it, we have the original as a backup) */
             $command = "rm $remoteToLocal";
             $this->exec($command, false);
+
+            /* Increment progress bar */
+            $progress->advance(20);
 
             /* All done here! */
 
@@ -227,15 +258,24 @@ class Config extends BaseConfig
             /* Adapt the local database dump, and upload it */
             $this->adaptDump($localDbDump);
 
+            /* Increment progress bar */
+            $progress->advance(5);
+
             /* Copy to the remote host */
             if (!$scp->put($localToRemote, $localDbDump)) {
                 $this->io->error('Unable to upload local database dump to remote host');
             }
 
+            /* Increment progress bar */
+            $progress->advance(10);
+
             /* Import the database on the remote host */
             $command = "mysql --host={$this->dbHost} --user={$this->dbUser} --password={$this->dbPass} --port={$this->dbPort} --database={$this->database} < $localToRemote";
             $this->io->text("<info>Executing remote command:</info> " . $command);
             $ssh->exec($command);
+
+            /* Increment progress bar */
+            $progress->advance(30);
 
             /* Remove the local copy (since we imported it, no need to keep it, we have the original as a backup) */
             $command = "rm $localDbDump";
@@ -244,6 +284,8 @@ class Config extends BaseConfig
 
         /*************************    All done!    *************************/
 
+        /* End the progress bar */
+        $progress->finish();
         $this->io->success("Completed {$this->action}ing database!");
 
     } // END database() function
