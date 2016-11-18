@@ -26,6 +26,7 @@ namespace BMM\CMSMove\Config;
 
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Helper\QuestionHelper;
+use Symfony\Component\Console\Question\Question;
 
 use phpseclib\Net\SCP as Net_SCP;
 use phpseclib\Net\SSH2 as Net_SSH2;
