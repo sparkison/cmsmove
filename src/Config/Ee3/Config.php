@@ -1,6 +1,6 @@
 <?php
 
-namespace BMM\CMSMove\Config\Ee;
+namespace BMM\CMSMove\Config\Ee3;
 
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Helper\QuestionHelper;
