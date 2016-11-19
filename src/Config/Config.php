@@ -277,7 +277,7 @@ abstract class Config
         /*************************    Make local and remote backups    *************************/
 
         /* Step 1. make copy of local database */
-        $command = "mysqldump --opt --add-drop-table --skip-comments --no-create-db --host={$localDb->dbHost} --user={$localDb->dbUser} --password={$localDb->dbPass} --port={$localDb->dbPort} --databases {$localDb->db} --result-file=$localDbDump";
+        $command = "mysqldump --opt --add-drop-table --skip-comments --no-create-db --host={$localDb->dbHost} --user={$localDb->dbUser} --password='{$localDb->dbPass}' --port={$localDb->dbPort} --databases {$localDb->db} --result-file=$localDbDump";
 
         /* Execute the command */
         $this->exec($command, false);
@@ -305,9 +305,9 @@ abstract class Config
         $progress->advance(10);
 
         /* If here, connected successfully to remote host! */
-        $command = "mysqldump --opt --add-drop-table --skip-comments --no-create-db --host={$this->dbHost} --user={$this->dbUser} --password={$this->dbPass} --port={$this->dbPort} --databases {$this->database} --result-file=$remoteDb";
+        $command = "mysqldump --opt --add-drop-table --skip-comments --no-create-db --host={$this->dbHost} --user={$this->dbUser} --password='{$this->dbPass}' --port={$this->dbPort} --databases {$this->database} --result-file=$remoteDb";
         $this->io->text("<info>Executing remote command:</info> " . $command);
-        $ssh->exec($command);
+        $this->io->text($ssh->exec($command));
 
         /* Increment progress bar */
         $progress->advance(10);
@@ -342,7 +342,7 @@ abstract class Config
             $progress->advance(5);
 
             /* Import it */
-            $command = "mysql --host={$localDb->dbHost} --user={$localDb->dbUser} --password={$localDb->dbPass} --port={$localDb->dbPort} --database={$localDb->db} < $remoteToLocal";
+            $command = "mysql --host={$localDb->dbHost} --user={$localDb->dbUser} --password='{$localDb->dbPass}' --port={$localDb->dbPort} --database={$localDb->db} < $remoteToLocal";
             $this->exec($command, false);
 
             /* Increment progress bar */
@@ -376,7 +376,7 @@ abstract class Config
             $progress->advance(10);
 
             /* Import the database on the remote host */
-            $command = "mysql --host={$this->dbHost} --user={$this->dbUser} --password={$this->dbPass} --port={$this->dbPort} --database={$this->database} < $localToRemote";
+            $command = "mysql --host={$this->dbHost} --user={$this->dbUser} --password='{$this->dbPass}' --port={$this->dbPort} --database={$this->database} < $localToRemote";
             $this->io->text("<info>Executing remote command:</info> " . $command);
             $ssh->exec($command);
 
