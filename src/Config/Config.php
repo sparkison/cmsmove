@@ -26,7 +26,7 @@ namespace BMM\CMSMove\Config;
 
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Helper\QuestionHelper;
-use Symfony\Component\Console\Question\Question;
+use Symfony\Component\Console\Question\ChoiceQuestion;
 
 use phpseclib\Net\SCP as Net_SCP;
 use phpseclib\Net\SSH2 as Net_SSH2;
@@ -198,16 +198,24 @@ abstract class Config
         /* Get the custom directory array */
         $customDirs = $this->configVars->mappings->custom;
 
+        /* Get the object vars */
+        $customDirVars = get_object_vars($customDirs);
+        $choices = [];
+        foreach ($customDirVars as $var => $object) {
+            $choices[] = $var;
+        }
+
         /* prompt user for the desired custom directory to sync */
         $helper = new QuestionHelper();
+        $question = new ChoiceQuestion('<comment>Please select the custom directory to ' . $this->action . ':</comment> ', $choices, '');
+        $question->setErrorMessage('Directory %s is invalid.');
 
-        $question = new Question('<comment>Please enter the name of the custom directory:</comment> ', '');
         $customDir = $helper->ask($this->input, $this->output, $question);
 
         if (property_exists($customDirs, $customDir)) {
 
             /* Entered a valid custom directory, let's sync it! */
-            $title = ucfirst($this->action) . "ing the custom directory: \"$customDir\"...";
+            $title = ucfirst($this->action) . "ing the custom directory \"$customDir\"...";
             $this->io->title($title);
 
             /*
@@ -231,7 +239,7 @@ abstract class Config
                 $this->io->error("You don't have a \"type\" set in your custom directory config");
             }
 
-            $this->syncIt($localDir, $remoteDir, "custom");
+            $this->syncIt($localDir, $remoteDir, "custom", false);
 
         } else {
             /* Didn't find the custom directory entered, inform the user and show the directory so they know */
@@ -404,8 +412,9 @@ abstract class Config
      * @param $local
      * @param $remote
      * @param string $syncing
+     * @param bool $output_title
      */
-    public function syncIt($local, $remote, $syncing = "")
+    public function syncIt($local, $remote, $syncing = "", $output_title = true)
     {
         $cwd = getcwd();
         $ssh = "";
@@ -428,8 +437,10 @@ abstract class Config
         /**
          * Inform user of command we're about to perform
          */
-        $title = ucfirst($this->action) . "ing $syncing...";
-        $this->io->title($title);
+        if ($output_title) {
+            $title = ucfirst($this->action) . "ing $syncing...";
+            $this->io->title($title);
+        }
 
         // Determine if push or pull
         if ($this->action === 'pull') {
