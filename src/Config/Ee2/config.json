@@ -1,15 +1,14 @@
 {
-  "type": "ee3",
+  "type": "ee2",
   "mappings": {
-    "app": "system",
+    "app": "admin",
     "www": "public",
-    "config": "user/config",
+    "config": "expressionengine/config",
     "plugins": {
-      "files": "user/addons",
-      "templates": "themes/user"
+      "files": "expressionengine/third_party",
+      "templates": "themes"
     },
-    "images": "images",
-    "templates": "user/templates",
+    "templates": "expressionengine/templates",
     "custom": {
       "uploads": {
         "type": "public",
