@@ -5,7 +5,7 @@ Currently supported systems:
 - [Craft CMS](https://craftcms.com/)
 - [ExpressionEngine (1 and 2)](http://expressionengine.com/)
 
-Planned systems not (yet implemented):
+Planned systems (not yet implemented):
 - [WordPress](https://wordpress.org/)
 
 ## Requirements
