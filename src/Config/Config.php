@@ -310,7 +310,8 @@ abstract class Config
         }
 
         /* Output the ssh log, if anything */
-        $this->io->note($ssh->message_log);
+        if(!empty($ssh->message_log))
+            $this->io->note($ssh->message_log);
 
         /* Increment progress bar */
         $progress->advance(10);
