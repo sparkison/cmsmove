@@ -24,7 +24,7 @@ Planned systems not (yet implemented):
 
 3. Change to a project directory, such as `~/Sites/mysite.dev`, and run `cmsmove config <framework>` where `<framework>` is one of the configured CMS for cmsmove<sup>*</sup>
 
-<sup>*</sup>_See **Usage** below for more information_
+<sup>*</sup>See **Usage** below for more information
 
 ## Usage
 
