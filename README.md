@@ -113,8 +113,8 @@ Example config file:
 - `environments` the various environments (e.g. local, staging, production)
     - `local` this is the only required environment for accessing the local database, all other environments are optional, and can be named whatever you like
 
-**App not above root:** If the app and public folder are one in the same simply set `mappings.www` as and empty string, and set `mappings.app` as the public folder.
-Additionally, set the `environments.<your_environment>.root` to your remote host public folder and leaver `environments.<your_environment>.public` as an empty string.
+**App not above root:** If the app and public folder are one in the same simply set `mappings.www` as an empty string, and set `mappings.app` as the public folder.
+Additionally, set the `environments.<your_environment>.root` to your remote host public folder and leave `environments.<your_environment>.public` as an empty string.
  
 **Adding custom directories for syncing:**
 Within the `mappings.custom` array of the config file add a `key => array` mapping for your custom directory.
