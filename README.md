@@ -24,7 +24,7 @@ Planned systems (not yet implemented):
 
 3. Change to a project directory, such as `~/Sites/mysite.dev`, and run `cmsmove config <framework>` where `<framework>` is one of the configured CMS for cmsmove<sup>*</sup>
 
-<sup>*</sup>See **Usage** below for more information
+<sup>*</sup>See _Usage_ below for more information
 
 ## Usage
 
@@ -139,11 +139,11 @@ E.g.
 ```
 Using the example above, issuing `cmsmove push staging custom` will give a prompt similar to the following:
 ```
-[0] custom
+[0] uploads
 [1] assets
 >
 ```
-Entering 1 at the prompt would push/pull the "uploads" directory from the local and remote configured public directory.
+Entering 0 at the prompt would push the "uploads" directory from the local to the remote configured public directory. While entering 1 would push the assets directory.
 
 ## Updating
 
