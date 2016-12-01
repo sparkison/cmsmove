@@ -294,7 +294,7 @@ abstract class Config
         $progress->advance(5);
 
         /* Step 2. connect to remote host and make copy of database */
-        $ssh = new Net_SSH2($this->host);
+        $ssh = new Net_SSH2($this->host, $this->sshPort);
         /* Enable quite mode to prevent printing of "stdin: is not a tty" line in the output stream */
         $ssh->enableQuietMode();
         if (!empty($this->sshKeyFile)) {
@@ -444,9 +444,9 @@ abstract class Config
          * Determine if using SSH password, or keyfile
          */
         if (!empty($this->sshKeyFile)) {
-            $ssh = "-e 'ssh -i " . $this->sshKeyFile . "'";
+            $ssh = "-e 'ssh -p $this->sshPort -i " . $this->sshKeyFile . "'";
         } else {
-            $ssh = "--rsh=\"sshpass -p '" . $this->sshPass . "' ssh -o StrictHostKeyChecking=no\"";
+            $ssh = "--rsh=\"sshpass -p '" . $this->sshPass . "' ssh -p $this->sshPort -o StrictHostKeyChecking=no\"";
         }
 
         /**
