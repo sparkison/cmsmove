@@ -3,7 +3,13 @@
   "description": "CMSMove - automated CMS deployment.",
   "license": "GPL",
   "keywords": [
-    "cmsmove"
+    "cmsmove",
+    "sparkison",
+    "automated deployment",
+    "craft",
+    "craft cms",
+    "expressionengine",
+    "wordpress"
   ],
   "require": {
     "php": ">=5.6.0",
