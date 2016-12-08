@@ -1,6 +1,6 @@
 <?php
 
-namespace BMM\CMSMove\Config\Laravel;
+namespace BMM\CMSMove\Config\Laravel53;
 
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Helper\QuestionHelper;
