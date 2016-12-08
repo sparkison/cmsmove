@@ -21,7 +21,7 @@ class Config extends BaseConfig
             // Sync the app directory
             $this->configVars->mappings->app => $this->root . '/' . $this->configVars->mappings->app,
             // Sync the public directory
-            $this->configVars->mappings->www => $this->root . '/' . $this->configVars->mappings->www,
+            $this->configVars->mappings->www => $this->root . '/' . $this->public,
             // Sync the bootstrap directory
             'bootstrap' => $this->root . '/bootstrap',
             // Sync the config directory
