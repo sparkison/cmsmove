@@ -428,8 +428,9 @@ abstract class Config
      * @param $remote
      * @param string $syncing
      * @param bool $output_title
+     * @param bool $file
      */
-    public function syncIt($local, $remote, $syncing = "", $output_title = true)
+    public function syncIt($local, $remote, $syncing = "", $output_title = true, $file = false)
     {
         $cwd = getcwd();
         $ssh = "";
@@ -459,9 +460,21 @@ abstract class Config
 
         // Determine if push or pull
         if ($this->action === 'pull') {
-            $command = "rsync {$ssh} --progress -rlpt --compress --omit-dir-times --delete --exclude-from={$cwd}/rsync.ignore {$this->sshUser}@{$this->host}:/{$remote}/ {$cwd}/{$local}";
+            // See if syncing a file or folder
+            if($file) {
+                $sync = "{$this->sshUser}@{$this->host}:/$remote $cwd/";
+            } else {
+                $sync = "{$this->sshUser}@{$this->host}:/$remote/ $cwd/$local";
+            }
+            $command = "rsync {$ssh} --progress -rlpt --compress --omit-dir-times --delete --exclude-from={$cwd}/rsync.ignore $sync";
         } else if ($this->action === 'push') {
-            $command = "rsync {$ssh} --progress -rlpt --compress --omit-dir-times --delete --exclude-from={$cwd}/rsync.ignore {$cwd}/{$local}/ {$this->sshUser}@{$this->host}:/{$remote}";
+            // See if syncing a file or folder
+            if($file) {
+                $sync = "$cwd/$local {$this->sshUser}@{$this->host}:/$remote";
+            } else {
+                $sync = "$cwd/$local/ {$this->sshUser}@{$this->host}:/$remote";
+            }
+            $command = "rsync {$ssh} --progress -rlpt --compress --omit-dir-times --delete --exclude-from={$cwd}/rsync.ignore $sync";
         }
 
         /**

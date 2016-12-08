@@ -10,13 +10,67 @@ use BMM\CMSMove\Config\Config as BaseConfig;
 class Config extends BaseConfig
 {
 
+
+    /**
+     * Sync the entire application directory
+     */
+    public function all()
+    {
+        /* Upload the main application folders and files needed to run */
+        $directories = [
+            // Sync the app directory
+            $this->configVars->mappings->app => $this->root . '/' . $this->configVars->mappings->app,
+            // Sync the public directory
+            $this->configVars->mappings->www => $this->root . '/' . $this->configVars->mappings->www,
+            // Sync the bootstrap directory
+            'bootstrap' => $this->root . '/bootstrap',
+            // Sync the config directory
+            'config' => $this->root . '/config',
+            // Sync the database folder
+            'database' => $this->root . '/database',
+            // Sync the resources folder
+            'resources' => $this->root . '/resources',
+            // Sync the routes folder
+            'routes' => $this->root . '/routes',
+            // Sync the storage folder
+            'storage' => $this->root . '/storage',
+            // Sync the tests folder
+            'tests' => $this->root . '/tests',
+            // Sync the vendor folder
+            'vendor' => $this->root . '/vendor',
+        ];
+
+        /* Loop through and sync the directories */
+        foreach($directories as $source => $destination) {
+            /* Sync it! */
+            $this->syncIt($source, $destination, "all");
+        }
+
+        /* Add files */
+        $files = [
+            // Sync the env file
+            '.env' => $this->root . '/.env',
+            // Sync the artisan file
+            'artisan' => $this->root . '/artisan',
+            // Sync the server file
+            'server.php' => $this->root . '/server.php'
+        ];
+        /* Loop through and sync the files */
+        foreach($files as $source => $destination) {
+            /* Sync it! */
+            $this->syncIt($source, $destination, "all", true, true);
+        }
+
+
+    } // END all() function
+
     /**
      * Sync the templates
      */
     public function resources()
     {
         /* Get the template directory from the config file */
-        $templateDir = $this->configVars->mappings->resources;
+        $templateDir = 'resources';
 
         /* Get the remote directory */
         $remoteDir = $this->root . "/" . $templateDir;
@@ -32,7 +86,7 @@ class Config extends BaseConfig
     public function vendor()
     {
         /* Get the plugins directory from the config file */
-        $pluginDir = $this->configVars->mappings->vendor;
+        $pluginDir = 'vendor';
 
         /* Get the remote directory */
         $remoteDir = $this->root . "/" . $pluginDir;
@@ -48,7 +102,7 @@ class Config extends BaseConfig
     public function config()
     {
         /* Get the config directory from the config file */
-        $configDir = $this->configVars->mappings->config;
+        $configDir = 'config';
 
         /* Get the remote directory */
         $remoteDir = $this->root . "/" . $configDir;
@@ -96,7 +150,7 @@ class Config extends BaseConfig
     public function migrations()
     {
         /* Get the migrations directory from the config file */
-        $migrationDir = 'database/' . $this->configVars->mappings->migrations;
+        $migrationDir = 'database/migrations';
 
         /* Get the remote directory */
         $remoteDir = $this->root . "/" . $migrationDir;
@@ -112,13 +166,13 @@ class Config extends BaseConfig
     public function routes()
     {
         /* Get the routes directory from the config file */
-        $routesDir = $this->configVars->mappings->routes;
+        $routesDir = 'routes';
 
         /* Get the remote directory */
         $remoteDir = $this->root . "/" . $routesDir;
 
         /* Sync it! */
-        $this->syncIt($routesDir, $remoteDir, "migrations");
+        $this->syncIt($routesDir, $remoteDir, "routes");
 
     } // END routes() function
 
@@ -128,13 +182,13 @@ class Config extends BaseConfig
     public function storage()
     {
         /* Get the storage directory from the config file */
-        $storageDir = $this->configVars->mappings->storage;
+        $storageDir = 'storage';
 
         /* Get the remote directory */
         $remoteDir = $this->root . "/" . $storageDir;
 
         /* Sync it! */
-        $this->syncIt($storageDir, $remoteDir, "migrations");
+        $this->syncIt($storageDir, $remoteDir, "storage");
 
     } // END storage() function
 

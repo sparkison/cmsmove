@@ -3,12 +3,6 @@
   "mappings": {
     "app": "app",
     "www": "public",
-    "config": "config",
-    "vendor": "vendor",
-    "resources": "resources",
-    "migrations": "migrations",
-    "storage": "storage",
-    "routes": "routes",
     "custom": {
       "css": {
         "type": "public",
