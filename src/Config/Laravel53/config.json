@@ -1,0 +1,61 @@
+{
+  "type": "laravel53",
+  "mappings": {
+    "app": "app",
+    "www": "public",
+    "config": "config",
+    "vendor": "vendor",
+    "resources": "resources",
+    "migrations": "migrations",
+    "storage": "storage",
+    "routes": "routes",
+    "custom": {
+      "css": {
+        "type": "public",
+        "directory": "css"
+      },
+      "js": {
+        "type": "public",
+        "directory": "js"
+      }
+    }
+  },
+  "environments": {
+    "local": {
+      "root": "/Users/myusername/Sites/mysite.dev",
+      "db": "",
+      "dbHost": "localhost",
+      "dbUser": "",
+      "dbPass": "",
+      "dbPort": "3306"
+    },
+    "staging": {
+      "host": "",
+      "root" : "/home/mysite",
+      "public": "public_html",
+      "user": "",
+      "password": "",
+      "keyfile": "",
+      "port": "22",
+      "db": "",
+      "dbHost": "localhost",
+      "dbUser": "",
+      "dbPass": "",
+      "dbPort": "3306"
+    },
+    "production": {
+      "host": "",
+      "root" : "/home/mysite",
+      "public": "public_html",
+      "user": "",
+      "password": "",
+      "keyfile": "",
+      "port": "22",
+      "db": "",
+      "dbHost": "localhost",
+      "dbUser": "",
+      "dbPass": "",
+      "dbPort": "3306"
+    }
+  }
+}
