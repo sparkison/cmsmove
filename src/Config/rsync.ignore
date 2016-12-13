@@ -1,5 +1,6 @@
 *.sql
 *.swp
+*.gz
 .git
 .sass-cache
 .DS_Store
@@ -15,5 +16,6 @@ craft/storage/runtime/
 /public/storage
 /storage/*.key
 /vendor
+wp-config.php
 moveConfig.json
 rsync.ignore

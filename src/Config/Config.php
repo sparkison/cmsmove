@@ -27,6 +27,7 @@ namespace BMM\CMSMove\Config;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Question\ChoiceQuestion;
+use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 
 use phpseclib\Net\SCP as Net_SCP;
 use phpseclib\Net\SSH2 as Net_SSH2;
@@ -186,6 +187,19 @@ abstract class Config
         $this->dbPass = $dbPass;
         $this->dbHost = $dbHost;
         $this->dbPort = $dbPort;
+
+        /**
+         * Add some style to the command line!
+         */
+        $style = new OutputFormatterStyle('magenta');
+        $this->output->getFormatter()->setStyle('remote', $style);
+
+        $style = new OutputFormatterStyle('blue');
+        $this->output->getFormatter()->setStyle('local', $style);
+
+        $style = new OutputFormatterStyle('green');
+        $this->output->getFormatter()->setStyle('command', $style);
+
     }
 
     /**
@@ -265,9 +279,14 @@ abstract class Config
         $title = ucfirst($this->action) . "ing database...";
         $this->io->title($title);
 
-        /* Start a progress bar */
+        /* Start a progress bar
+
+        Disabled for now, not very useful, and clutters the output
+
         $progress = new ProgressBar($this->output, 80);
         $progress->start();
+
+        */
 
         /* Create a timestamp for uniqueness */
         $timestamp = date('Y.m.d_H.i.s');
@@ -290,9 +309,6 @@ abstract class Config
         /* Execute the command */
         $this->exec($command, false);
 
-        /* Increment progress bar */
-        $progress->advance(5);
-
         /* Step 2. connect to remote host and make copy of database */
         $ssh = new Net_SSH2($this->host, $this->sshPort);
         /* Enable quite mode to prevent printing of "stdin: is not a tty" line in the output stream */
@@ -313,102 +329,86 @@ abstract class Config
         if(!empty($ssh->message_log))
             $this->io->note($ssh->message_log);
 
-        /* Increment progress bar */
-        $progress->advance(10);
-
         /* If here, connected successfully to remote host! */
         $command = "mysqldump --opt --add-drop-table --skip-comments --no-create-db --host={$this->dbHost} --user={$this->dbUser} --password='{$this->dbPass}' --port={$this->dbPort} --databases {$this->database} --result-file=$remoteDbDump";
-        $this->io->text("<info>Executing remote command:</info> " . $command);
+        $this->io->text("<remote>Executing remote command:</remote> " . $command);
         $this->io->text($ssh->exec($command));
 
-        /* Increment progress bar */
-        $progress->advance(10);
+        /* Compress the remote DB */
+        $command = "gzip -f --best $remoteDbDump";
+        $this->io->text("<remote>Executing remote command:</remote> " . $command);
+        $this->io->text($ssh->exec($command));
 
         /* Step 3. copy the remote dump down to local */
+        $this->io->text("<remote>Executing remote command:</remote> scp -p {$this->sshPort} {$this->sshUser}@{$this->host}:{$remoteDbDump}.gz {$remoteToLocal}.gz");
+
         $scp = new Net_SCP($ssh);
-        if (!$scp->get($remoteDbDump, $remoteToLocal)) {
+        if (!$scp->get($remoteDbDump . '.gz', $remoteToLocal . '.gz')) {
             $this->io->error('Unable to download remote database dump');
+            die();
         }
-
-        /* Increment progress bar */
-        $progress->advance(5);
-
-        /* Step 4. remove the remote database dump */
-        $command = "rm " . $remoteDbDump;
-        $this->io->text("<info>Executing remote command:</info> " . $command);
-        $this->io->text($ssh->exec($command));
-
-        /* Increment progress bar */
-        $progress->advance(5);
 
         /*************************    Determine what we're doing here    *************************/
 
         /* Step 5. see if we're issuing a push or a pull */
         if ($this->action === 'pull') {
-            $this->io->text('<info>Getting ready to import the remote database</info>');
+
+            /* Compress the local dump for safe-keeping */
+            $command = "gzip -f --best $localDbDump";
+            $this->exec($command, false);
+
+            /* Decompress the remote DB dump */
+            $command = "gzip -d -q {$remoteToLocal}.gz";
+            $this->exec($command, false);
 
             /* Adapt the remote database dump, and import it */
             $this->adaptDump($remoteToLocal);
-
-            /* Increment progress bar */
-            $progress->advance(5);
 
             /* Import it */
             $command = "mysql --host={$localDb->dbHost} --user={$localDb->dbUser} --password='{$localDb->dbPass}' --port={$localDb->dbPort} --database={$localDb->db} < $remoteToLocal";
             $this->exec($command, false);
 
-            /* Increment progress bar */
-            $progress->advance(20);
-
             /* Remove the remote copy (since we imported it, no need to keep it, we have the original as a backup) */
             $command = "rm $remoteToLocal";
             $this->exec($command, false);
 
-            /* End the progress bar */
-            $progress->finish();
-
-            /* All done here! */
-
         } else {
-            /* Copy the local database to the remote host */
-            $this->io->text('<info>Getting ready to push the local database to the remote host for import</info>');
-
             /* Adapt the local database dump, and upload it */
             $this->adaptDump($localDbDump);
 
-            /* Increment progress bar */
-            $progress->advance(5);
+            /* Compress it! */
+            $command = "gzip -f --best $localDbDump";
+            $this->exec($command, false);
 
             /* Copy to the remote host */
-            if (!$scp->put($localToRemote, $localDbDump, Net_SCP::SOURCE_LOCAL_FILE)) {
+            if (!$scp->put($localToRemote, $localDbDump . '.gz', Net_SCP::SOURCE_LOCAL_FILE)) {
                 $this->io->error('Unable to upload local database dump to remote host');
+                die();
             }
 
-            /* Increment progress bar */
-            $progress->advance(10);
+            /* Decompress the dumpfile */
+            $command = "gzip -d -q {$localDbDump}.gz";
+            $this->io->text("<remote>Executing remote command:</remote> " . $command);
+            $this->io->text($ssh->exec($command));
 
             /* Import the database on the remote host */
             $command = "mysql --host={$this->dbHost} --user={$this->dbUser} --password='{$this->dbPass}' --port={$this->dbPort} --database={$this->database} < $localToRemote";
-            $this->io->text("<info>Executing remote command:</info> " . $command);
+            $this->io->text("<remote>Executing remote command:</remote> " . $command);
             $this->io->text($ssh->exec($command));
-
-            /* Increment progress bar */
-            $progress->advance(10);
 
             /* Remove the local copy (since we imported it, no need to keep it, we have the original as a backup) */
             $command = "rm $localDbDump";
             $this->exec($command, false);
 
-            /* Increment progress bar */
-            $progress->advance(5);
+            /* Compress the remote DB for safe-keeping */
+            $command = "gzip -f --best $remoteToLocal";
+            $this->exec($command, false);
 
             /* Remove the local dump from staging since we've already imported it */
             $command = "rm $localToRemote ";
-            $this->io->text("<info>Executing remote command:</info> " . $command);
+            $this->io->text("<remote>Executing remote command:</remote> " . $command);
             $this->io->text($ssh->exec($command));
 
-            /* End the progress bar */
-            $progress->finish();
         }
 
         /*************************    All done!    *************************/
@@ -499,28 +499,20 @@ abstract class Config
          * Execute it!
          */
         if (isset($command)) {
-            $this->io->text("<info>Executing local command:</info> " . $command);
-            exec($command, $output, $exit_code);
-        }
-
-        /**
-         * If exec returned any output, display it for the user
-         */
-        if (isset($output) && !empty($output)) {
-            foreach ($output as $line) {
-                $this->io->writeln($line);
-            }
+            $this->io->text("<local>Executing local command:</local> " . $command);
+            system($command, $exit_code);
         }
 
         /**
          * If exec returned an error code, show the user there was an error
          * Else, show a success message
          */
-        if (isset($exit_code) && $exit_code == 0) {
+        if (isset($exit_code) && $exit_code !== FALSE) {
             if ($success_msg)
                 $this->io->success(ucfirst($this->action) . " command executed successfully!");
         } else {
             $this->io->error("There was an error executing the " . ucfirst($this->action) . " command. Please check your config and try again");
+            die();
         }
 
     } // END exec() function

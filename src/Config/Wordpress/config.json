@@ -1,0 +1,55 @@
+{
+  "type": "wordpress",
+  "mappings": {
+    "app": "",
+    "www": "",
+    "plugins": "wp-content/plugins",
+    "uploads": "wp-content/uploads",
+    "templates": "wp-content/themes",
+    "custom": {
+      "uploads": {
+        "type": "root",
+        "directory": "wp-content/themes/MY-THEME-NAME/assets"
+      }
+    }
+  },
+  "environments": {
+    "local": {
+      "host": "http://mysite.dev",
+      "root": "/Users/myusername/Sites/mysite.dev",
+      "db": "",
+      "dbHost": "localhost",
+      "dbUser": "",
+      "dbPass": "",
+      "dbPort": "3306"
+    },
+    "staging": {
+      "host": "",
+      "root" : "/home/mysite",
+      "public": "public_html",
+      "user": "",
+      "password": "",
+      "keyfile": "",
+      "port": "22",
+      "db": "",
+      "dbHost": "localhost",
+      "dbUser": "",
+      "dbPass": "",
+      "dbPort": "3306"
+    },
+    "production": {
+      "host": "",
+      "root" : "/home/mysite",
+      "public": "public_html",
+      "user": "",
+      "password": "",
+      "keyfile": "",
+      "port": "22",
+      "db": "",
+      "dbHost": "localhost",
+      "dbUser": "",
+      "dbPass": "",
+      "dbPort": "3306"
+    }
+  }
+}
