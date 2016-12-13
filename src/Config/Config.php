@@ -419,7 +419,7 @@ abstract class Config
             $this->exec($command, false);
 
             /* Remove the local dump from staging since we've already imported it */
-            $command = "rm $localToRemote ";
+            $command = "rm {$localToRemote}.gz";
             $this->io->text("<remote>Executing remote command:</remote> " . $command);
             $this->io->text($ssh->exec($command));
         }
