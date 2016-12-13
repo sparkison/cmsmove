@@ -24,7 +24,7 @@
       "dbPort": "3306"
     },
     "staging": {
-      "vhost": "http://mysite.com",
+      "vhost": "http://staging.mysite.com",
       "host": "hostname or IP address",
       "root" : "/home/mysite",
       "public": "public_html",
@@ -39,6 +39,7 @@
       "dbPort": "3306"
     },
     "production": {
+      "vhost": "http://mysite.com",
       "host": "",
       "root" : "/home/mysite",
       "public": "public_html",
