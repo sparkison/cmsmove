@@ -352,7 +352,6 @@ abstract class Config
 
         /* Step 5. see if we're issuing a push or a pull */
         if ($this->action === 'pull') {
-
             /* Compress the local dump for safe-keeping */
             $command = "gzip -f --best $localDbDump";
             $this->exec($command, false);
@@ -365,14 +364,17 @@ abstract class Config
             $this->adaptDump($remoteToLocal);
 
             /* Import it */
-            $command = "mysql --host={$localDb->dbHost} --user={$localDb->dbUser} --password='{$localDb->dbPass}' --port={$localDb->dbPort} --database={$localDb->db} < $remoteToLocal";
+            $command = "mysql --host={$localDb->dbHost} --user={$localDb->dbUser} --password='{$localDb->dbPass}' --port={$localDb->dbPort} --database={$localDb->db} --execute=\"SET autocommit=0;SOURCE $remoteToLocal;COMMIT\"";
             $this->exec($command, false);
 
             /* Remove the remote copy (since we imported it, no need to keep it, we have the original as a backup) */
             $command = "rm $remoteToLocal";
             $this->exec($command, false);
-
         } else {
+            /* Compress the remote DB for safe-keeping */
+            $command = "gzip -f --best $remoteToLocal";
+            $this->exec($command, false);
+
             /* Adapt the local database dump, and upload it */
             $this->adaptDump($localDbDump);
 
@@ -392,7 +394,7 @@ abstract class Config
             $this->io->text($ssh->exec($command));
 
             /* Import the database on the remote host */
-            $command = "mysql --host={$this->dbHost} --user={$this->dbUser} --password='{$this->dbPass}' --port={$this->dbPort} --database={$this->database} < $localToRemote";
+            $command = "mysql --host={$this->dbHost} --user={$this->dbUser} --password='{$this->dbPass}' --port={$this->dbPort} --database={$this->database} --execute=\"SET autocommit=0;SOURCE $localToRemote;COMMIT\"";
             $this->io->text("<remote>Executing remote command:</remote> " . $command);
             $this->io->text($ssh->exec($command));
 
@@ -400,15 +402,10 @@ abstract class Config
             $command = "rm $localDbDump";
             $this->exec($command, false);
 
-            /* Compress the remote DB for safe-keeping */
-            $command = "gzip -f --best $remoteToLocal";
-            $this->exec($command, false);
-
             /* Remove the local dump from staging since we've already imported it */
             $command = "rm $localToRemote ";
             $this->io->text("<remote>Executing remote command:</remote> " . $command);
             $this->io->text($ssh->exec($command));
-
         }
 
         /*************************    All done!    *************************/
