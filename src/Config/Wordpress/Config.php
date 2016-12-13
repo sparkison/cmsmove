@@ -136,8 +136,12 @@ class Config extends BaseConfig
     private function replaceDbHostName($string)
     {
         // First, let's get the local and remote host since we're going to need them
+        if(! (property_exists($this->configVars->environments->local, 'vhost') || property_exists($this->configVars->environments->{$this->environment}, 'vhost')) ) {
+            $this->io->error("Error getting vhost for local and remote destinations. Please ensure each environment has the \"vhost\" key set");
+            die();
+        }
         $localHost = $this->configVars->environments->local->vhost;
-        $remoteHost = $this->configVars->{$this->environment}->local->vhost;
+        $remoteHost = $this->configVars->environments->{$this->environment}->vhost;
 
         // Second, determine what we're doing
         if ($this->action === 'pull') {
