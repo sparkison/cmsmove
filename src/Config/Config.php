@@ -413,7 +413,7 @@ abstract class Config
             }
 
             /* Decompress the dumpfile */
-            $command = "gzip -d -q {$localDbDump}.gz";
+            $command = "gzip -d -q {$localToRemote}.gz";
             $this->io->text("<remote>Executing remote command:</remote> " . $command);
             $this->io->text($ssh->exec($command));
 
