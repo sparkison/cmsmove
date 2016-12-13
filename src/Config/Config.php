@@ -364,6 +364,11 @@ abstract class Config
             die();
         }
 
+        /* Now that we download the remote DB, delete it from the remote host */
+        $command = "rm {$remoteDbDump}.gz";
+        $this->io->text("<remote>Executing remote command:</remote> " . $command);
+        $this->io->text($ssh->exec($command));
+
         /*************************    Determine what we're doing here    *************************/
 
         /* Step 5. see if we're issuing a push or a pull */
@@ -419,7 +424,7 @@ abstract class Config
             $this->exec($command, false);
 
             /* Remove the local dump from staging since we've already imported it */
-            $command = "rm {$localToRemote}.gz";
+            $command = "rm $localToRemote";
             $this->io->text("<remote>Executing remote command:</remote> " . $command);
             $this->io->text($ssh->exec($command));
         }
