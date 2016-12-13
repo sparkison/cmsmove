@@ -35,7 +35,7 @@ After installing either the `phar` file or using the global `composer` install, 
 
 To use **cmsmove** you must first add a config file and an ignore file. To bootstrap these items, `cd` into your projects root working directory and issue:
 - `cmsmove config <framework>` where `<framework>` is one of the supported CMS systems
-    - Currently support options for `<framework>` are `craft`, `ee2` and `ee3`
+    - Currently support options for `<framework>` are `craft`, `laravel53`, `wordpress`, `ee2` and `ee3`
 
 This will generate the required `moveConfig.json` and `rsync.ignore` files. The `moveConfig.json` file will contain all the needed variables for pushing and pulling. The `rsync.ignore` file will contain a list of files/folders to ignore. Add items to this list as needed.
 
