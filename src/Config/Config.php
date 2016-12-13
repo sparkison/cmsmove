@@ -228,8 +228,23 @@ abstract class Config
 
         if (property_exists($customDirs, $customDir)) {
 
+            /* see if we're pushing a folder or file */
+            $file = false;
+            if (property_exists($customDirs->{$customDir}, 'file')) {
+                // File is set
+                $file_setting = strtolower($customDirs->{$customDir}->file);
+                if ($file_setting == 'true'
+                    || $file_setting == 'yes'
+                    || $file_setting == 'y'
+                )
+                    $file = true;
+            }
+
+            /* What are we syncing */
+            $syncing = $file ? 'file' : 'directory';
+
             /* Entered a valid custom directory, let's sync it! */
-            $title = ucfirst($this->action) . "ing the custom directory \"$customDir\"...";
+            $title = ucfirst($this->action) . "ing the custom $syncing \"$customDir\"...";
             $this->io->title($title);
 
             /*
@@ -251,9 +266,10 @@ abstract class Config
                 $remoteDir = $this->root . "/" . $customDirs->{$customDir}->directory;
             } else {
                 $this->io->error("You don't have a \"type\" set in your custom directory config");
+                die();
             }
 
-            $this->syncIt($localDir, $remoteDir, "custom", false);
+            $this->syncIt($localDir, $remoteDir, "custom", false, $file);
 
         } else {
             /* Didn't find the custom directory entered, inform the user and show the directory so they know */
