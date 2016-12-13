@@ -403,8 +403,11 @@ abstract class Config
             $command = "gzip -f --best $localDbDump";
             $this->exec($command, false);
 
+            /* Since the SCP output is silent, inform user of command */
+            $this->io->text("<remote>Executing remote command:</remote> scp -p {$this->sshPort} {$localDbDump}.gz {$this->sshUser}@{$this->host}:{$localToRemote}.gz");
+
             /* Copy to the remote host */
-            if (!$scp->put($localToRemote, $localDbDump . '.gz', Net_SCP::SOURCE_LOCAL_FILE)) {
+            if (!$scp->put($localToRemote . '.gz', $localDbDump . '.gz', Net_SCP::SOURCE_LOCAL_FILE)) {
                 $this->io->error('Unable to upload local database dump to remote host');
                 die();
             }
