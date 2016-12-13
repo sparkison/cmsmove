@@ -15,7 +15,7 @@
   },
   "environments": {
     "local": {
-      "host": "http://mysite.dev",
+      "vhost": "http://mysite.dev",
       "root": "/Users/myusername/Sites/mysite.dev",
       "db": "",
       "dbHost": "localhost",
@@ -24,7 +24,8 @@
       "dbPort": "3306"
     },
     "staging": {
-      "host": "",
+      "vhost": "http://mysite.com",
+      "host": "hostname or IP address",
       "root" : "/home/mysite",
       "public": "public_html",
       "user": "",
