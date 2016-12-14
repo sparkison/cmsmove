@@ -576,12 +576,12 @@ abstract class Config
      */
     public function fixPerms($sudo = true)
     {
+        // Attempt to do this as sudo by default
+        $sudo = $sudo ? 'sudo ' : '';
+
         /* Need to determine the environment to fix permissions on */
         if ($this->environment == 'local') {
             $cwd = getcwd();
-
-            // Attempt to do this as sudo by default
-            $sudo = $sudo ? 'sudo ' : '';
 
             // First, set permissions for the app folder
             $command = "cd {$cwd}/{$this->configVars->mappings->app} && {$sudo}find . -type f -exec chmod 644 {} \\;";
@@ -627,24 +627,33 @@ abstract class Config
              * Just need one more check to see if root and public are separate, or the same
              * (we need to know if app is above public, within the root directory)
              */
-            if ($this->{$this->environment}->public === '') {
+            if ($this->configVars->environments->{$this->environment}->public === '') {
                 // Public not set, so we're doing it all from root!
-                $this->io->text("<remote>Executing remote command:</remote> setting file and folder permissions");
-                $command = "cd {$this->{$this->environment}->root} && {$sudo}find . -type f -exec chmod 644 {} \\;";
+                $command = "cd {$this->configVars->environments->{$this->environment}->root} && {$sudo}find . -type f -exec chmod 644 {} \\;";
+                $this->io->text("<remote>Executing remote command:</remote> " . $command);
                 $this->io->text($ssh->exec($command));
-                $command = "cd {$this->{$this->environment}->root} && {$sudo}find . -type d -exec chmod 755 {} \\;";
+
+                $command = "cd {$this->configVars->environments->{$this->environment}->root} && {$sudo}find . -type d -exec chmod 755 {} \\;";
+                $this->io->text("<remote>Executing remote command:</remote> " . $command);
+
                 $this->io->text($ssh->exec($command));
             } else {
-                $this->io->text("<remote>Executing remote command:</remote> setting file and folder permissions");
                 // Set app permissions
-                $command = "cd {$this->{$this->environment}->root}/{$this->configVars->mappings->app} && {$sudo}find . -type f -exec chmod 644 {} \\;";
+                $command = "cd {$this->configVars->environments->{$this->environment}->root}/{$this->configVars->mappings->app} && {$sudo}find . -type f -exec chmod 644 {} \\;";
+                $this->io->text("<remote>Executing remote command:</remote> " . $command);
                 $this->io->text($ssh->exec($command));
-                $command = "cd {$this->{$this->environment}->root}/{$this->configVars->mappings->app} && {$sudo}find . -type d -exec chmod 755 {} \\;";
+
+                $command = "cd {$this->configVars->environments->{$this->environment}->root}/{$this->configVars->mappings->app} && {$sudo}find . -type d -exec chmod 755 {} \\;";
+                $this->io->text("<remote>Executing remote command:</remote> " . $command);
                 $this->io->text($ssh->exec($command));
+
                 // Set public permissions
-                $command = "cd {$this->{$this->environment}->root}/{$this->{$this->environment}->public} && {$sudo}find . -type f -exec chmod 644 {} \\;";
+                $command = "cd {$this->configVars->environments->{$this->environment}->root}/{$this->{$this->environment}->public} && {$sudo}find . -type f -exec chmod 644 {} \\;";
+                $this->io->text("<remote>Executing remote command:</remote> " . $command);
                 $this->io->text($ssh->exec($command));
-                $command = "cd {$this->{$this->environment}->root}/{$this->{$this->environment}->public} && {$sudo}find . -type d -exec chmod 755 {} \\;";
+
+                $command = "cd {$this->configVars->environments->{$this->environment}->root}/{$this->{$this->environment}->public} && {$sudo}find . -type d -exec chmod 755 {} \\;";
+                $this->io->text("<remote>Executing remote command:</remote> " . $command);
                 $this->io->text($ssh->exec($command));
             }
 
