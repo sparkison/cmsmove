@@ -129,7 +129,7 @@ class FixPermissions extends Command
             $environmentArgs = $configArgs->environments;
         } else {
             $io->error("Unable to locate the \"environments\" key in the config file. Please check for proper formatting and try again.");
-            return;
+            die();
         }
 
         // See if the environment exists first
@@ -137,12 +137,15 @@ class FixPermissions extends Command
             $environmentArgs = $environmentArgs->{$this->environment};
         } else {
             $io->error("Unable to locate the \"" . $this->environment . "\" key in your configured environments. Please check for proper formatting and try again.");
-            return;
+            die();
         }
 
         // See if the host is set
         if (array_key_exists('host', $environmentArgs)) {
             $this->host = $environmentArgs->host;
+        } elseif ($this->environment !== 'local') {
+            $io->error("Unable to locate the \"host\" variable in your environment. Please check for proper formatting and try again.");
+            die();
         }
 
         // See if root is set
@@ -150,7 +153,7 @@ class FixPermissions extends Command
             $this->root = $environmentArgs->root;
         } else {
             $io->error("Unable to locate the \"root\" variable in your environment. Please check for proper formatting and try again.");
-            return;
+            die();
         }
 
         // See if public is set
@@ -158,7 +161,7 @@ class FixPermissions extends Command
             $this->public = $environmentArgs->public;
         } else {
             $io->error("Unable to locate the \"public\" variable in your environment. Please check for proper formatting and try again.");
-            return;
+            die();
         }
 
         // See if SSH user is set
@@ -166,7 +169,7 @@ class FixPermissions extends Command
             $this->sshUser = $environmentArgs->user;
         } else {
             $io->error("Unable to locate the \"user\" variable in your environment. Please check for proper formatting and try again.");
-            return;
+            die();
         }
 
         // See if SSH key file is set
@@ -176,7 +179,7 @@ class FixPermissions extends Command
             $this->sshPass = $environmentArgs->password;
         } else {
             $io->error("You must define either a SSH \"keyfile\" or SSH \"password\". We were unable to find either in your environment config. Please check for proper formatting and try again.");
-            return;
+            die();
         }
 
         // See if SSH port is set
@@ -191,7 +194,7 @@ class FixPermissions extends Command
             $this->database = $environmentArgs->db;
         } else {
             $io->error("Unable to locate the \"db\" variable in your environment. Please check for proper formatting and try again.");
-            return;
+            die();
         }
 
         // See if database user is set
@@ -199,7 +202,7 @@ class FixPermissions extends Command
             $this->dbUser = $environmentArgs->dbUser;
         } else {
             $io->error("Unable to locate the \"dbUser\" variable in your environment. Please check for proper formatting and try again.");
-            return;
+            die();
         }
 
         // See if database password is set
@@ -207,7 +210,7 @@ class FixPermissions extends Command
             $this->dbPass = $environmentArgs->dbPass;
         } else {
             $io->error("Unable to locate the \"dbPass\" variable in your environment. Please check for proper formatting and try again.");
-            return;
+            die();
         }
 
         // See if database host is set
