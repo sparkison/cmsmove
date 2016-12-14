@@ -7,8 +7,8 @@ Currently supported systems:
 - [Laravel 5.3](https://laravel.com/) (*_beta_)
 - [WordPress](https://wordpress.org/) (*_beta_)
 
-<small>*Systems marked with (\*_beta_) are still in active development and have had little testing. Please use at your own risk. Of course, we would love for you to help test these systems and report any issues you may have to help improve functionality!*
-</small>
+<small><i>Systems marked with (*_beta_) are still in active development and have had little testing. Please use at your own risk. Of course, we would love for you to help test these systems and report any issues you may have to help improve functionality!
+</i></small>
 
 ## Requirements
 - [Composer](https://getcomposer.org/) (_optional if you opt to use the pre-compiled `phar` file in the [releases](https://github.com/sparkison/cmsmove/releases) tab_)
