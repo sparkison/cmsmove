@@ -94,4 +94,30 @@ class Config extends BaseConfig
 
     } // END www() function
 
+    /**
+     * Sync the core updates folders
+     */
+    public function update()
+    {
+
+        /* Get the core themes folder */
+        $coreThemesDir = $this->configVars->mappings->www . "/themes/ee";
+
+        /* Get the remote directory */
+        $remoteDir = $this->public . "/themes/ee";
+
+        /* Sync it! */
+        $this->syncIt($coreThemesDir, $remoteDir, "core themes");
+
+        /* Get the system core folder */
+        $coreDir = $this->configVars->mappings->app . "/ee";
+
+        /* Get the remote directory */
+        $remoteDir = $this->root . "/" . $coreDir;
+
+        /* Sync it! */
+        $this->syncIt($coreDir, $remoteDir, "core update");
+
+    }
+
 }

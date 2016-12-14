@@ -265,7 +265,7 @@ abstract class Config
                 $localDir = $customDirs->{$customDir}->directory;
                 $remoteDir = $this->root . "/" . $customDirs->{$customDir}->directory;
             } else {
-                $this->io->error("You don't have a \"type\" set in your custom directory config");
+                $this->io->error("You don't have a proper \"type\" set in your custom directory config. Please ensure \"type\" is set to either \"public\" or \"root\" and try again");
                 die();
             }
 
