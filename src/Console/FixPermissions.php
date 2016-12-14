@@ -217,7 +217,7 @@ class FixPermissions extends Command
 
         // See if sudo set for environment
         if (array_key_exists('sudo', $environmentArgs)) {
-            $sudo = strtolower($this->sudo);
+            $sudo = strtolower($environmentArgs->sudo);
             if ($sudo == 'true'
                 || $sudo == 'yes'
                 || $sudo == 'y'
