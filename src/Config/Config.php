@@ -483,19 +483,23 @@ abstract class Config
         if ($this->action === 'pull') {
             // See if syncing a file or folder
             if($file) {
-                $sync = "{$this->sshUser}@{$this->host}:/$remote $cwd/";
+                $sync = "{$this->sshUser}@{$this->host}:/$remote $cwd/$local";
+                $syncArgs = "-lpt";
             } else {
                 $sync = "{$this->sshUser}@{$this->host}:/$remote/ $cwd/$local";
+                $syncArgs = "-rlpt";
             }
-            $command = "rsync {$ssh} --progress -rlpt --compress --omit-dir-times --delete --exclude-from={$cwd}/rsync.ignore $sync";
+            $command = "rsync {$ssh} --progress $syncArgs --compress --omit-dir-times --delete --exclude-from={$cwd}/rsync.ignore $sync";
         } else if ($this->action === 'push') {
             // See if syncing a file or folder
             if($file) {
                 $sync = "$cwd/$local {$this->sshUser}@{$this->host}:/$remote";
+                $syncArgs = "-lpt";
             } else {
                 $sync = "$cwd/$local/ {$this->sshUser}@{$this->host}:/$remote";
+                $syncArgs = "-rlpt";
             }
-            $command = "rsync {$ssh} --progress -rlpt --compress --omit-dir-times --delete --exclude-from={$cwd}/rsync.ignore $sync";
+            $command = "rsync {$ssh} --progress $syncArgs --compress --omit-dir-times --delete --exclude-from={$cwd}/rsync.ignore $sync";
         }
 
         /**
