@@ -61,14 +61,14 @@ class Push extends Command
         $configFile = getcwd() . '/moveConfig.json';
         if (!file_exists($configFile)) {
             $io->error("No config file found. Please run the \"config\" command first.");
-            return;
+            die();
         }
 
         $configVariables = json_decode(file_get_contents($configFile));
 
         if (!array_key_exists('type', $configVariables)) {
             $io->error("Config file does not contain \"type\" variable.");
-            return;
+            die();
         }
 
         $className = ucfirst($configVariables->type);
@@ -76,7 +76,7 @@ class Push extends Command
 
         if (!class_exists($classNamespace)) {
             $io->error("Unable to find class for the specified CMS \"" . $classNamespace . "\"");
-            return;
+            die();
         }
 
         // Set the namespaced class
@@ -110,7 +110,7 @@ class Push extends Command
             $config->{$this->destination}();
         } else {
             $io->error("Unable to find method \"" . $this->destination . "\" in the loaded config class \"" . $this->classNamespace . "\"");
-            return;
+            die();
         }
 
     }
@@ -138,7 +138,7 @@ class Push extends Command
             $environmentArgs = $configArgs->environments;
         } else {
             $io->error("Unable to locate the \"environments\" key in the config file. Please check for proper formatting and try again.");
-            return;
+            die();
         }
 
         // See if the environment exists first
@@ -146,7 +146,7 @@ class Push extends Command
             $environmentArgs = $environmentArgs->{$this->environment};
         } else {
             $io->error("Unable to locate the \"" . $this->environment . "\" key in your configured environments. Please check for proper formatting and try again.");
-            return;
+            die();
         }
 
         // See if the host is set
@@ -154,7 +154,7 @@ class Push extends Command
             $this->host = $environmentArgs->host;
         } else {
             $io->error("Unable to locate the \"host\" variable in your environment. Please check for proper formatting and try again.");
-            return;
+            die();
         }
 
         // See if root is set
@@ -162,7 +162,7 @@ class Push extends Command
             $this->root = $environmentArgs->root;
         } else {
             $io->error("Unable to locate the \"root\" variable in your environment. Please check for proper formatting and try again.");
-            return;
+            die();
         }
 
         // See if public is set
@@ -170,7 +170,7 @@ class Push extends Command
             $this->public = $environmentArgs->public;
         } else {
             $io->error("Unable to locate the \"public\" variable in your environment. Please check for proper formatting and try again.");
-            return;
+            die();
         }
 
         // See if SSH user is set
@@ -178,7 +178,7 @@ class Push extends Command
             $this->sshUser = $environmentArgs->user;
         } else {
             $io->error("Unable to locate the \"user\" variable in your environment. Please check for proper formatting and try again.");
-            return;
+            die();
         }
 
         // See if SSH key file is set
@@ -188,7 +188,7 @@ class Push extends Command
             $this->sshPass = $environmentArgs->password;
         } else {
             $io->error("You must define either a SSH \"keyfile\" or SSH \"password\". We were unable to find either in your environment config. Please check for proper formatting and try again.");
-            return;
+            die();
         }
 
         // See if SSH port is set
@@ -203,7 +203,7 @@ class Push extends Command
             $this->database = $environmentArgs->db;
         } else {
             $io->error("Unable to locate the \"db\" variable in your environment. Please check for proper formatting and try again.");
-            return;
+            die();
         }
 
         // See if database user is set
@@ -211,7 +211,7 @@ class Push extends Command
             $this->dbUser = $environmentArgs->dbUser;
         } else {
             $io->error("Unable to locate the \"dbUser\" variable in your environment. Please check for proper formatting and try again.");
-            return;
+            die();
         }
 
         // See if database password is set
@@ -219,7 +219,7 @@ class Push extends Command
             $this->dbPass = $environmentArgs->dbPass;
         } else {
             $io->error("Unable to locate the \"dbPass\" variable in your environment. Please check for proper formatting and try again.");
-            return;
+            die();
         }
 
         // See if database host is set

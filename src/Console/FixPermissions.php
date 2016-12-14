@@ -59,14 +59,14 @@ class FixPermissions extends Command
         $configFile = getcwd() . '/moveConfig.json';
         if (!file_exists($configFile)) {
             $io->error("No config file found. Please run the \"config\" command first.");
-            return;
+            die();
         }
 
         $configVariables = json_decode(file_get_contents($configFile));
 
         if (!array_key_exists('type', $configVariables)) {
             $io->error("Config file does not contain \"type\" variable.");
-            return;
+            die();
         }
 
         $className = ucfirst($configVariables->type);
@@ -74,7 +74,7 @@ class FixPermissions extends Command
 
         if (!class_exists($classNamespace)) {
             $io->error("Unable to find class for the specified CMS \"" . $classNamespace . "\"");
-            return;
+            die();
         }
 
         // Set the namespaced class
@@ -107,7 +107,7 @@ class FixPermissions extends Command
             $config->{$this->action}();
         } else {
             $io->error("Unable to find method \"" . $this->action . "\" in the loaded config class \"" . $this->classNamespace . "\"");
-            return;
+            die();
         }
 
     }
@@ -151,7 +151,7 @@ class FixPermissions extends Command
         // See if root is set
         if (array_key_exists('root', $environmentArgs)) {
             $this->root = $environmentArgs->root;
-        } else {
+        } elseif ($this->environment !== 'local') {
             $io->error("Unable to locate the \"root\" variable in your environment. Please check for proper formatting and try again.");
             die();
         }
@@ -159,7 +159,7 @@ class FixPermissions extends Command
         // See if public is set
         if (array_key_exists('public', $environmentArgs)) {
             $this->public = $environmentArgs->public;
-        } else {
+        } elseif ($this->environment !== 'local') {
             $io->error("Unable to locate the \"public\" variable in your environment. Please check for proper formatting and try again.");
             die();
         }
@@ -167,7 +167,7 @@ class FixPermissions extends Command
         // See if SSH user is set
         if (array_key_exists('user', $environmentArgs)) {
             $this->sshUser = $environmentArgs->user;
-        } else {
+        } elseif ($this->environment !== 'local') {
             $io->error("Unable to locate the \"user\" variable in your environment. Please check for proper formatting and try again.");
             die();
         }
@@ -177,7 +177,7 @@ class FixPermissions extends Command
             $this->sshKeyFile = $environmentArgs->keyfile;
         } else if (array_key_exists('password', $environmentArgs) && $environmentArgs->password != "") { // See if SSH password is set
             $this->sshPass = $environmentArgs->password;
-        } else {
+        } elseif ($this->environment !== 'local') {
             $io->error("You must define either a SSH \"keyfile\" or SSH \"password\". We were unable to find either in your environment config. Please check for proper formatting and try again.");
             die();
         }
@@ -192,39 +192,26 @@ class FixPermissions extends Command
         // See if database name is set
         if (array_key_exists('db', $environmentArgs)) {
             $this->database = $environmentArgs->db;
-        } else {
-            $io->error("Unable to locate the \"db\" variable in your environment. Please check for proper formatting and try again.");
-            die();
         }
 
         // See if database user is set
         if (array_key_exists('dbUser', $environmentArgs)) {
             $this->dbUser = $environmentArgs->dbUser;
-        } else {
-            $io->error("Unable to locate the \"dbUser\" variable in your environment. Please check for proper formatting and try again.");
-            die();
         }
 
         // See if database password is set
         if (array_key_exists('dbPass', $environmentArgs)) {
             $this->dbPass = $environmentArgs->dbPass;
-        } else {
-            $io->error("Unable to locate the \"dbPass\" variable in your environment. Please check for proper formatting and try again.");
-            die();
         }
 
         // See if database host is set
         if (array_key_exists('dbHost', $environmentArgs)) {
             $this->dbHost = $environmentArgs->dbHost;
-        } else {
-            $this->dbHost = "localhost";
         }
 
         // See if database port is set
         if (array_key_exists('dbPort', $environmentArgs)) {
             $this->dbPort = $environmentArgs->dbPort;
-        } else {
-            $this->dbPort = "3306";
         }
 
     }
