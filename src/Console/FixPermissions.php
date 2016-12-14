@@ -143,9 +143,6 @@ class FixPermissions extends Command
         // See if the host is set
         if (array_key_exists('host', $environmentArgs)) {
             $this->host = $environmentArgs->host;
-        } else {
-            $io->error("Unable to locate the \"host\" variable in your environment. Please check for proper formatting and try again.");
-            return;
         }
 
         // See if root is set
