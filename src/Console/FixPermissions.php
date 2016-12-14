@@ -20,6 +20,7 @@ class FixPermissions extends Command
     private $classNamespace;
     private $environment;
     private $action = 'fixPerms';
+    private $sudo = false;
     private $host;
     private $root;
     private $public;
@@ -100,7 +101,7 @@ class FixPermissions extends Command
 
         // Already checked if class exists and configured required variables
         // Fire it up!
-        $config = new $this->classNamespace($input, $output, $io, $configVariables, $this->environment, $this->action, $this->host, $this->root, $this->public, $this->sshUser, $this->sshKeyFile, $this->sshPass, $this->sshPort, $this->database, $this->dbUser, $this->dbPass, $this->dbHost, $this->dbPort);
+        $config = new $this->classNamespace($input, $output, $io, $configVariables, $this->environment, $this->action, $this->host, $this->root, $this->public, $this->sshUser, $this->sshKeyFile, $this->sshPass, $this->sshPort, $this->database, $this->dbUser, $this->dbPass, $this->dbHost, $this->dbPort, $this->sudo);
 
         // Check if the desired method exists
         if (method_exists($this->classNamespace, $this->action)) {
@@ -213,6 +214,17 @@ class FixPermissions extends Command
         if (array_key_exists('dbPort', $environmentArgs)) {
             $this->dbPort = $environmentArgs->dbPort;
         }
+
+        // See if sudo set for environment
+        if (array_key_exists('sudo', $environmentArgs)) {
+            $sudo = strtolower($this->sudo);
+            if ($sudo == 'true'
+                || $sudo == 'yes'
+                || $sudo == 'y'
+            )
+                $this->sudo = true;
+        }
+
 
     }
 

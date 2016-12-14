@@ -57,6 +57,13 @@ abstract class Config
     protected $io;
 
     /**
+     * Determines whether to run commands as sudo user or not
+     *
+     * @var
+     */
+    protected $sudo;
+
+    /**
      * The config file contents
      * Access keys using Object syntax
      *
@@ -167,7 +174,7 @@ abstract class Config
      */
     protected $dbPort;
 
-    public function __construct($input, $output, $io, $configVars, $environment, $action, $host, $root, $public, $sshUser, $sshKeyFile, $sshPass, $sshPort = 22, $database, $dbUser, $dbPass, $dbHost = 'localhost', $dbPort = 3306)
+    public function __construct($input, $output, $io, $configVars, $environment, $action, $host, $root, $public, $sshUser, $sshKeyFile, $sshPass, $sshPort = 22, $database, $dbUser, $dbPass, $dbHost = 'localhost', $dbPort = 3306, $sudo = false)
     {
         $this->input = $input;
         $this->output = $output;
@@ -187,6 +194,7 @@ abstract class Config
         $this->dbPass = $dbPass;
         $this->dbHost = $dbHost;
         $this->dbPort = $dbPort;
+        $this->sudo = $sudo;
 
         /**
          * Add some style to the command line!
@@ -571,13 +579,11 @@ abstract class Config
      *
      * This will set all files to 0644 and all directories to 0755
      * If different permissions are required, please override the method in the config class
-     *
-     * @param bool $sudo
      */
-    public function fixPerms($sudo = true)
+    public function fixPerms()
     {
-        // Attempt to do this as sudo by default
-        $sudo = $sudo ? 'sudo ' : '';
+        // Default to non-sudo user
+        $sudo = $this->sudo ? 'sudo ' : '';
 
         /* Need to determine the environment to fix permissions on */
         if ($this->environment == 'local') {
@@ -629,30 +635,30 @@ abstract class Config
              */
             if ($this->configVars->environments->{$this->environment}->public === '') {
                 // Public not set, so we're doing it all from root!
-                $command = "cd {$this->configVars->environments->{$this->environment}->root} && {$sudo}find . -type f -exec chmod 644 {} \\;";
+                $command = "cd /{$this->configVars->environments->{$this->environment}->root} && {$sudo}find . -type f -exec chmod 644 {} \\;";
                 $this->io->text("<remote>Executing remote command:</remote> " . $command);
                 $this->io->text($ssh->exec($command));
 
-                $command = "cd {$this->configVars->environments->{$this->environment}->root} && {$sudo}find . -type d -exec chmod 755 {} \\;";
+                $command = "cd /{$this->configVars->environments->{$this->environment}->root} && {$sudo}find . -type d -exec chmod 755 {} \\;";
                 $this->io->text("<remote>Executing remote command:</remote> " . $command);
 
                 $this->io->text($ssh->exec($command));
             } else {
                 // Set app permissions
-                $command = "cd {$this->configVars->environments->{$this->environment}->root}/{$this->configVars->mappings->app} && {$sudo}find . -type f -exec chmod 644 {} \\;";
+                $command = "cd /{$this->configVars->environments->{$this->environment}->root}/{$this->configVars->mappings->app} && {$sudo}find . -type f -exec chmod 644 {} \\;";
                 $this->io->text("<remote>Executing remote command:</remote> " . $command);
                 $this->io->text($ssh->exec($command));
 
-                $command = "cd {$this->configVars->environments->{$this->environment}->root}/{$this->configVars->mappings->app} && {$sudo}find . -type d -exec chmod 755 {} \\;";
+                $command = "cd /{$this->configVars->environments->{$this->environment}->root}/{$this->configVars->mappings->app} && {$sudo}find . -type d -exec chmod 755 {} \\;";
                 $this->io->text("<remote>Executing remote command:</remote> " . $command);
                 $this->io->text($ssh->exec($command));
 
                 // Set public permissions
-                $command = "cd {$this->configVars->environments->{$this->environment}->root}/{$this->{$this->environment}->public} && {$sudo}find . -type f -exec chmod 644 {} \\;";
+                $command = "cd /{$this->configVars->environments->{$this->environment}->root}/{$this->{$this->environment}->public} && {$sudo}find . -type f -exec chmod 644 {} \\;";
                 $this->io->text("<remote>Executing remote command:</remote> " . $command);
                 $this->io->text($ssh->exec($command));
 
-                $command = "cd {$this->configVars->environments->{$this->environment}->root}/{$this->{$this->environment}->public} && {$sudo}find . -type d -exec chmod 755 {} \\;";
+                $command = "cd /{$this->configVars->environments->{$this->environment}->root}/{$this->{$this->environment}->public} && {$sudo}find . -type d -exec chmod 755 {} \\;";
                 $this->io->text("<remote>Executing remote command:</remote> " . $command);
                 $this->io->text($ssh->exec($command));
             }
