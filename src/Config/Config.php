@@ -274,6 +274,7 @@ abstract class Config
         } else {
             /* Didn't find the custom directory entered, inform the user and show the directory so they know */
             $this->io->error("Unable to find a key for the directory you entered: \"$customDir\"");
+            die();
         }
 
     } // END custom() function
@@ -332,12 +333,14 @@ abstract class Config
         if (!empty($this->sshKeyFile)) {
             $key = new Crypt_RSA();
             $key->loadKey(file_get_contents($this->sshKeyFile));
-            if (!$ssh->login('root', $key, Net_SSH2::LOG_SIMPLE)) {
+            if (!$ssh->login($this->sshUser, $key, Net_SSH2::LOG_SIMPLE)) {
                 $this->io->error('Unable to login into remote host using ssh key');
+                die();
             }
         } else {
             if (!$ssh->login($this->sshUser, $this->sshPass, Net_SSH2::LOG_SIMPLE)) {
                 $this->io->error('Unable to login into remote host using password');
+                die();
             }
         }
 
@@ -563,8 +566,97 @@ abstract class Config
 
     } // END adaptDump() function
 
+    /**
+     * Attempts to fix the permissions on the given environment
+     *
+     * This will set all files to 0644 and all directories to 0755
+     * If different permissions are required, please override the method in the config class
+     *
+     * @param bool $sudo
+     */
+    public function fixPerms($sudo = true)
+    {
+        /* Need to determine the environment to fix permissions on */
+        if ($this->environment == 'local') {
+            $cwd = getcwd();
+
+            // Attempt to do this as sudo by default
+            $sudo = $sudo ? 'sudo ' : '';
+
+            // First, set permissions for the app folder
+            $command = "cd {$cwd}/{$this->configVars->mappings->app} && {$sudo}find . -type f -exec chmod 644 {} \\;";
+            $this->exec($command, false);
+            $command = "cd {$cwd}/{$this->configVars->mappings->app} && {$sudo}find . -type d -exec chmod 755 {} \\;";
+            /*
+             * Checking if www directory set, if so we're not done
+             */
+            if ($this->configVars->mappings->www !== '')
+                $this->exec($command, false);
+            else
+                $this->exec($command, true);
+
+            // Then the www folder, if set
+            if ($this->configVars->mappings->www !== '') {
+                $command = "cd {$cwd}/{$this->configVars->mappings->www} && {$sudo}find . -type f -exec chmod 644 {} \\;";
+                $this->exec($command, false);
+                $command = "cd {$cwd}/{$this->configVars->mappings->www} && {$sudo}find . -type d -exec chmod 755 {} \\;";
+                $this->exec($command, true);
+            }
+        } else {
+            /*
+             * Setting permissions for remote host, need to establish connection first
+             */
+            $ssh = new Net_SSH2($this->host, $this->sshPort);
+            $ssh->enableQuietMode();
+            if (!empty($this->sshKeyFile)) {
+                $key = new Crypt_RSA();
+                $key->loadKey(file_get_contents($this->sshKeyFile));
+                if (!$ssh->login($this->sshUser, $key, Net_SSH2::LOG_SIMPLE)) {
+                    $this->io->error('Unable to login into remote host using ssh key');
+                    die();
+                }
+            } else {
+                if (!$ssh->login($this->sshUser, $this->sshPass, Net_SSH2::LOG_SIMPLE)) {
+                    $this->io->error('Unable to login into remote host using password');
+                    die();
+                }
+            }
+
+            /*
+             * Connection established, let's set those permissions!
+             * Just need one more check to see if root and public are separate, or the same
+             * (we need to know if app is above public, within the root directory)
+             */
+            if ($this->{$this->environment}->public === '') {
+                // Public not set, so we're doing it all from root!
+                $this->io->text("<remote>Executing remote command:</remote> setting file and folder permissions");
+                $command = "cd {$this->{$this->environment}->root} && {$sudo}find . -type f -exec chmod 644 {} \\;";
+                $this->io->text($ssh->exec($command));
+                $command = "cd {$this->{$this->environment}->root} && {$sudo}find . -type d -exec chmod 755 {} \\;";
+                $this->io->text($ssh->exec($command));
+            } else {
+                $this->io->text("<remote>Executing remote command:</remote> setting file and folder permissions");
+                // Set app permissions
+                $command = "cd {$this->{$this->environment}->root}/{$this->configVars->mappings->app} && {$sudo}find . -type f -exec chmod 644 {} \\;";
+                $this->io->text($ssh->exec($command));
+                $command = "cd {$this->{$this->environment}->root}/{$this->configVars->mappings->app} && {$sudo}find . -type d -exec chmod 755 {} \\;";
+                $this->io->text($ssh->exec($command));
+                // Set public permissions
+                $command = "cd {$this->{$this->environment}->root}/{$this->{$this->environment}->public} && {$sudo}find . -type f -exec chmod 644 {} \\;";
+                $this->io->text($ssh->exec($command));
+                $command = "cd {$this->{$this->environment}->root}/{$this->{$this->environment}->public} && {$sudo}find . -type d -exec chmod 755 {} \\;";
+                $this->io->text($ssh->exec($command));
+            }
+
+            // All done!
+            $this->io->success(ucfirst($this->action) . " command executed successfully!");
+        }
+
+    } // END fixPerms() function
+
+
     /****************************************
-     * END Sync helper functions
+     * END helper functions
      ****************************************/
 
 }

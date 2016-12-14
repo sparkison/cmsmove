@@ -6,6 +6,7 @@ use Symfony\Component\Console\Application;
 use BMM\CMSMove\Console\Start;
 use BMM\CMSMove\Console\Push;
 use BMM\CMSMove\Console\Pull;
+use BMM\CMSMove\Console\FixPermissions;
 
 if(file_exists(__DIR__.'/vendor')) { // Require locally for dev
     require __DIR__.'/vendor/autoload.php';
@@ -13,8 +14,9 @@ if(file_exists(__DIR__.'/vendor')) { // Require locally for dev
     require __DIR__.'/../../autoload.php';
 }
 
-$app = new Application('CMS Move', '1.0.33');
+$app = new Application('CMS Move', '1.0.34');
 $app->add(new Start);
 $app->add(new Push);
 $app->add(new Pull);
+$app->add(new FixPermissions);
 $app->run();
