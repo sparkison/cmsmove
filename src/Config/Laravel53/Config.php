@@ -65,6 +65,36 @@ class Config extends BaseConfig
     } // END all() function
 
     /**
+     * Sync the core directories as these are likely the ones that will change the most often
+     */
+    public function core()
+    {
+        /* Upload the main application folders and files needed to run */
+        $directories = [
+            // Sync the app directory
+            $this->configVars->mappings->app => $this->root . '/' . $this->configVars->mappings->app,
+            // Sync the public directory
+            $this->configVars->mappings->www => $this->root . '/' . $this->public,
+            // Sync the config directory
+            'config' => $this->root . '/config',
+            // Sync the database folder
+            'database' => $this->root . '/database',
+            // Sync the resources folder
+            'resources' => $this->root . '/resources',
+            // Sync the routes folder
+            'routes' => $this->root . '/routes',
+            // Sync the vendor folder
+            'vendor' => $this->root . '/vendor',
+        ];
+
+        /* Loop through and sync the directories */
+        foreach($directories as $source => $destination) {
+            /* Sync it! */
+            $this->syncIt($source, $destination, "core");
+        }
+    }
+
+    /**
      * Sync the templates
      */
     public function resources()
