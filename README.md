@@ -3,7 +3,7 @@ Automated deployment for popular content management systems
 
 Currently supported systems:
 - [Craft CMS](https://craftcms.com/)
-- [ExpressionEngine (1 and 2)](http://expressionengine.com/)
+- [ExpressionEngine (2 and 3)](http://expressionengine.com/)
 - [Laravel 5.3](https://laravel.com/) (*_beta_)
 - [WordPress](https://wordpress.org/) (*_beta_)
 
