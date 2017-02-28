@@ -470,8 +470,8 @@ abstract class Config
         /**
          * Remove any trailing slashes from source/dest as it could mess up the sync
          */
-        $local = rtrim($local, "/");
-        $remote = rtrim($remote, "/");
+        $local = ltrim(rtrim($local, "/"), "/");
+        $remote = ltrim(rtrim($remote, "/"), "/");
 
         /**
          * Determine if using SSH password, or keyfile
@@ -490,6 +490,9 @@ abstract class Config
             $this->io->title($title);
         }
 
+        // Adjust flags for files vs directories
+        $flags = $file ? '' : '--omit-dir-times --delete ';
+
         // Determine if push or pull
         if ($this->action === 'pull') {
             // See if syncing a file or folder
@@ -500,7 +503,7 @@ abstract class Config
                 $sync = "{$this->sshUser}@{$this->host}:/$remote/ $cwd/$local";
                 $syncArgs = "-rlpt";
             }
-            $command = "rsync {$ssh} --progress $syncArgs --compress --omit-dir-times --delete --exclude-from={$cwd}/rsync.ignore $sync";
+            $command = "rsync {$ssh} --progress $syncArgs --compress $flags--exclude-from={$cwd}/rsync.ignore $sync";
         } else if ($this->action === 'push') {
             // See if syncing a file or folder
             if($file) {
@@ -510,7 +513,7 @@ abstract class Config
                 $sync = "$cwd/$local/ {$this->sshUser}@{$this->host}:/$remote";
                 $syncArgs = "-rlpt";
             }
-            $command = "rsync {$ssh} --progress $syncArgs --compress --omit-dir-times --delete --exclude-from={$cwd}/rsync.ignore $sync";
+            $command = "rsync {$ssh} --progress $syncArgs --compress $flags--exclude-from={$cwd}/rsync.ignore $sync";
         }
 
         /**
