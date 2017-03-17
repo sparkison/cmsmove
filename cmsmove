@@ -7,6 +7,7 @@ use BMM\CMSMove\Console\Start;
 use BMM\CMSMove\Console\Push;
 use BMM\CMSMove\Console\Pull;
 use BMM\CMSMove\Console\FixPermissions;
+use BMM\CMSMove\Console\CraftInstaller;
 
 if(file_exists(__DIR__.'/vendor')) { // Require locally for dev
     require __DIR__.'/vendor/autoload.php';
@@ -14,9 +15,14 @@ if(file_exists(__DIR__.'/vendor')) { // Require locally for dev
     require __DIR__.'/../../autoload.php';
 }
 
-$app = new Application('CMS Move', '1.0.41');
+$app = new Application('CMS Move', '1.0.42');
 $app->add(new Start);
 $app->add(new Push);
 $app->add(new Pull);
 $app->add(new FixPermissions);
+
+// Add craft installer
+$app->add(new CraftInstaller(new GuzzleHttp\Client));
+
+// Run the app!
 $app->run();

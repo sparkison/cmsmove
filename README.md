@@ -4,7 +4,7 @@ Automated deployment for popular content management systems
 Currently supported systems:
 - [Craft CMS](https://craftcms.com/)
 - [ExpressionEngine (2 and 3)](http://expressionengine.com/)
-- [Laravel 5.3](https://laravel.com/) (*_beta_)
+- [Laravel 5.x](https://laravel.com/) (*_beta_)
 - [WordPress](https://wordpress.org/) (*_beta_)
 
 <small><i>Systems marked with (*_beta_) are still in active development and have had little testing. Please use at your own risk. Of course, we would love for you to help test these systems and report any issues you may have to help improve functionality!
@@ -146,6 +146,21 @@ Using the example above, issuing `cmsmove push staging custom` will give a promp
 >
 ```
 Entering 0 at the prompt would push the "uploads" directory from the local to the remote configured public directory. While entering 1 would push the assets directory.
+Additionally, you can specify a specific file as apposed to a directory using the following syntax:
+```json
+...
+    "custom": {
+      ...
+      "env": {
+        "type": "root",
+        "file": "y",
+        "directory": ".env"
+      }
+      ...
+    }
+...
+```
+Note that the `file` parameter just needs to be a "truthy" variable. For example "yes", "y" and "true" are all valid.
 
 ## Updating
 
