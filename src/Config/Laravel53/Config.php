@@ -256,7 +256,7 @@ class Config extends BaseConfig
             $this->io->note($ssh->message_log);
 
         /* If here, connected successfully to remote host! */
-        $command = $migrate_options ? "php artisan migrate:" . $migrate_options : "php artisan migrate";
+        $command = $migrate_options ? "cd {$this->root} && php artisan migrate:" . $migrate_options : "cd {$this->root} && php artisan migrate";
         $this->io->text("<remote>Executing remote command:</remote> " . $command);
         $this->io->text($ssh->exec($command));
 
