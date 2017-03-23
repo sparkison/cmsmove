@@ -672,6 +672,17 @@ abstract class Config
 
     } // END fixPerms() function
 
+    /**
+     * Placeholder for other config classes to implement
+     *
+     * @param string $migrate_options
+     * @return mixed
+     */
+    public function migrate($migrate_options)
+    {
+        $this->io->text('<info>The migrate method has no default implementation. Add this as an override method into the framework config class to utilize.</info>');
+    }
+
 
     /****************************************
      * END helper functions

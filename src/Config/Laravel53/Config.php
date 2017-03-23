@@ -4,6 +4,8 @@ namespace BMM\CMSMove\Config\Laravel53;
 
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Helper\QuestionHelper;
+use phpseclib\Net\SSH2 as Net_SSH2;
+use phpseclib\Crypt\RSA as Crypt_RSA;
 
 use BMM\CMSMove\Config\Config as BaseConfig;
 
@@ -221,5 +223,43 @@ class Config extends BaseConfig
         $this->syncIt($storageDir, $remoteDir, "storage");
 
     } // END storage() function
+
+    /**
+     * Issue the migrate command on the specified environment
+     *
+     * @param string $migrate_options
+     * @return mixed
+     */
+    public function migrate($migrate_options)
+    {
+        /* Step 2. connect to remote host and make copy of database */
+        $ssh = new Net_SSH2($this->host, $this->sshPort);
+        /* Enable quite mode to prevent printing of "stdin: is not a tty" line in the output stream */
+
+        $ssh->enableQuietMode();
+        if (!empty($this->sshKeyFile)) {
+            $key = new Crypt_RSA();
+            $key->loadKey(file_get_contents($this->sshKeyFile));
+            if (!$ssh->login($this->sshUser, $key, Net_SSH2::LOG_SIMPLE)) {
+                $this->io->error('Unable to login into remote host using ssh key');
+                die();
+            }
+        } else {
+            if (!$ssh->login($this->sshUser, $this->sshPass, Net_SSH2::LOG_SIMPLE)) {
+                $this->io->error('Unable to login into remote host using password');
+                die();
+            }
+        }
+
+        /* Output the ssh log, if anything */
+        if(!empty($ssh->message_log))
+            $this->io->note($ssh->message_log);
+
+        /* If here, connected successfully to remote host! */
+        $command = $migrate_options ? "php artisan migrate:" . $migrate_options : "php artisan migrate";
+        $this->io->text("<remote>Executing remote command:</remote> " . $command);
+        $this->io->text($ssh->exec($command));
+
+    } // END migrate() function
 
 }

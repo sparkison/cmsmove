@@ -8,6 +8,7 @@ use BMM\CMSMove\Console\Push;
 use BMM\CMSMove\Console\Pull;
 use BMM\CMSMove\Console\FixPermissions;
 use BMM\CMSMove\Console\CraftInstaller;
+use BMM\CMSMove\Console\Migrate;
 
 if(file_exists(__DIR__.'/vendor')) { // Require locally for dev
     require __DIR__.'/vendor/autoload.php';
@@ -15,10 +16,11 @@ if(file_exists(__DIR__.'/vendor')) { // Require locally for dev
     require __DIR__.'/../../autoload.php';
 }
 
-$app = new Application('CMS Move', '1.0.42');
+$app = new Application('CMS Move', '1.0.43');
 $app->add(new Start);
 $app->add(new Push);
 $app->add(new Pull);
+$app->add(new Migrate);
 $app->add(new FixPermissions);
 
 // Add craft installer
