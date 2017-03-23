@@ -232,10 +232,10 @@ class Config extends BaseConfig
      */
     public function migrate($migrate_options)
     {
-        /* Step 2. connect to remote host and make copy of database */
+        /* Setup ssh class for making the connection */
         $ssh = new Net_SSH2($this->host, $this->sshPort);
-        /* Enable quite mode to prevent printing of "stdin: is not a tty" line in the output stream */
 
+        /* Enable quite mode to prevent printing of "stdin: is not a tty" line in the output stream */
         $ssh->enableQuietMode();
         if (!empty($this->sshKeyFile)) {
             $key = new Crypt_RSA();
