@@ -110,21 +110,31 @@ class Config extends BaseConfig
      *
      * @param $file
      */
-    public function adaptDump($file)
+    public function adaptDump($file, $chunk_size = 4096)
     {
-
-        $contents = file_get_contents($file);
-        $contents_arr = explode("\n", $contents);
         $contents = array();
-        foreach ($contents_arr as $line) {
-            if (!((substr($line, 0, 2) === "--") || (substr($line, 0, 3) === "USE"))) {
-                // Need to check for existence of the host name and replace as need
-                $contents[] = $this->replaceDbHostName($line);
+        // Read the file in chunks to prevent out of memory errors
+        try
+        {
+            $handle = fopen($file, "r");
+            while (!feof($handle))
+            {
+                $chunk = fread($handle, $chunk_size);
+                $contents_arr = explode("\n", $chunk);
+                foreach ($contents_arr as $line) {
+                    if ( !((substr($line, 0, 2) === "--") || (substr($line, 0, 3) === "USE")) ) {
+                        $contents[] = $this->replaceDbHostName($line);
+                    }
+                }
             }
+            fclose($handle);
         }
-        $contents = implode("\n", $contents);
+        catch(Exception $e)
+        {
+            $this->io->error('Error processing database file: ' . $e->getMessage());
+            exit();
+        }
         file_put_contents($file, $contents);
-
     } // END adaptDump() function
 
     /**
