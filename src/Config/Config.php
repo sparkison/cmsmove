@@ -396,7 +396,7 @@ abstract class Config
             $this->adaptDump($remoteToLocal);
 
             /* Import it */
-            $command = "mysql --host={$localDb->dbHost} --user={$localDb->dbUser} --password='{$localDb->dbPass}' --port={$localDb->dbPort} --database={$localDb->db} --execute=\"SET autocommit=0;SOURCE $remoteToLocal;COMMIT\"";
+            $command = "mysql --host={$localDb->dbHost} --user={$localDb->dbUser} --password='{$localDb->dbPass}' --port={$localDb->dbPort} --database={$localDb->db} --force --execute=\"SET autocommit=0;SOURCE $remoteToLocal;COMMIT\"";
             $this->exec($command, false);
 
             /* Remove the remote copy (since we imported it, no need to keep it, we have the original as a backup) */
@@ -429,7 +429,7 @@ abstract class Config
             $this->io->text($ssh->exec($command));
 
             /* Import the database on the remote host */
-            $command = "mysql --host={$this->dbHost} --user={$this->dbUser} --password='{$this->dbPass}' --port={$this->dbPort} --database={$this->database} --execute=\"SET autocommit=0;SOURCE $localToRemote;COMMIT\"";
+            $command = "mysql --host={$this->dbHost} --user={$this->dbUser} --password='{$this->dbPass}' --port={$this->dbPort} --database={$this->database} --force --execute=\"SET autocommit=0;SOURCE $localToRemote;COMMIT\"";
             $this->io->text("<remote>Executing remote command:</remote> " . $command);
             $this->io->text($ssh->exec($command));
 
@@ -561,20 +561,31 @@ abstract class Config
      *
      * @param $file
      */
-    public function adaptDump($file)
+    public function adaptDump($file, $chunk_size = 4096)
     {
-
-        $contents = file_get_contents($file);
-        $contents_arr = explode("\n", $contents);
         $contents = array();
-        foreach ($contents_arr as $line) {
-            if ( !((substr($line, 0, 2) === "--") || (substr($line, 0, 3) === "USE")) ) {
-                $contents[] = $line;
+        // Read the file in chunks to prevent out of memory errors
+        try
+        {
+            $handle = fopen($file, "r");
+            while (!feof($handle))
+            {
+                $chunk = fread($handle, $chunk_size);
+                $contents_arr = explode("\n", $chunk);
+                foreach ($contents_arr as $line) {
+                    if ( !((substr($line, 0, 2) === "--") || (substr($line, 0, 3) === "USE")) ) {
+                        $contents[] = $line;
+                    }
+                }
             }
+            fclose($handle);
         }
-        $contents = implode("\n", $contents);
+        catch(Exception $e)
+        {
+            $this->io->error('Error processing database file: ' . $e->getMessage());
+            exit();
+        }
         file_put_contents($file, $contents);
-
     } // END adaptDump() function
 
     /**
