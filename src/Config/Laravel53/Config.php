@@ -97,6 +97,21 @@ class Config extends BaseConfig
     }
 
     /**
+     * Sync the env file
+     * Will look for env.{environment} and copy to the {environment} as .env
+     */
+    public function env()
+    {
+        $env = '.env.' . $this->environment;
+        if(is_file($env)) {
+            $this->syncIt($env, $this->root . '/.env', "env", true, true);
+        } else {
+            $this->io->error('Unable to locate file "' . $env . '".');
+            die();
+        }
+    }
+
+    /**
      * Sync the templates
      */
     public function resources()
