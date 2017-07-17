@@ -1,6 +1,6 @@
 {
   "type": "laravel53",
-  "db_type": "mysql",
+  "db_type": "psql",
   "mappings": {
     "app": "app",
     "www": "public",
