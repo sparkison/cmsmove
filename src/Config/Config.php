@@ -603,13 +603,64 @@ abstract class Config
             }
             fclose($handle);
         }
-        catch(Exception $e)
+        catch(\Exception $e)
         {
             $this->io->error('Error processing database file: ' . $e->getMessage());
             exit();
         }
         file_put_contents($file, $contents);
     } // END adaptDump() function
+
+    /**
+     * Take a serialised array and unserialise it replacing elements as needed and
+     * unserialising any subordinate arrays and performing the replace on those too.
+     *
+     * @param string $from       String we're looking to replace.
+     * @param string $to         What we want it to be replaced with
+     * @param mixed  $data       Used to pass any subordinate arrays back to in.
+     * @param bool   $serialised Does the array passed via $data need serialising.
+     *
+     * @return array	The original array with all elements replaced as needed.
+     */
+    public function recursiveUnSerializeReplace($from = '', $to = '', $data = '', $serialised = false)
+    {
+        // some unserialised data cannot be re-serialised eg. SimpleXMLElements
+        try {
+
+            if (is_string($data) && ($unserialized = @unserialize($data)) !== false) {
+                $data = $this->recursiveUnSerializeReplace($from, $to, $unserialized, true);
+            } elseif (is_array($data)) {
+                $_tmp = [];
+                foreach ($data as $key => $value) {
+                    $_tmp[$key] = $this->recursiveUnSerializeReplace($from, $to, $value, false);
+                }
+                $data = $_tmp;
+                unset($_tmp);
+            }
+            elseif (is_object($data)) {
+                $_tmp = $data;
+                $props = get_object_vars($data);
+                foreach ($props as $key => $value) {
+                    $_tmp->$key = $this->recursiveUnSerializeReplace($from, $to, $value, false);
+                }
+
+                $data = $_tmp;
+                unset($_tmp);
+            } else {
+                if (is_string($data)) {
+                    $data = str_replace($from, $to, $data, $count);
+                }
+            }
+
+            if ($serialised) {
+                return serialize($data);
+            }
+        } catch (\Exception $e) {
+            $this->io->error('Error issuing search/replace on database: ' . $e->getMessage());
+        }
+
+        return $data;
+    }
 
     /**
      * Attempts to fix the permissions on the given environment

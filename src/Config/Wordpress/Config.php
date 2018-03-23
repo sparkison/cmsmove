@@ -129,7 +129,7 @@ class Config extends BaseConfig
             }
             fclose($handle);
         }
-        catch(Exception $e)
+        catch(\Exception $e)
         {
             $this->io->error('Error processing database file: ' . $e->getMessage());
             exit();
@@ -156,10 +156,12 @@ class Config extends BaseConfig
         // Second, determine what we're doing
         if ($this->action === 'pull') {
             // We're pulling the remote db into local, replace host accordingly
-            $string = str_replace($remoteHost, $localHost, $string);
+            // $string = str_replace($remoteHost, $localHost, $string);
+            $string = $this->recursiveUnSerializeReplace($remoteHost, $localHost, $string);
         } else {
             // We're pushing the local database to remote, replace host accordingly
-            $string = str_replace($localHost, $remoteHost, $string);
+            // $string = str_replace($localHost, $remoteHost, $string);
+            $string = $this->recursiveUnSerializeReplace($localHost, $remoteHost, $string);
         }
         return $string;
     }
