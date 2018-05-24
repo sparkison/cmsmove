@@ -3,7 +3,9 @@
   "mappings": {
     "app": "",
     "www": "",
-    "plugins": "wp-content/plugins",
+    "plugins": {
+      "files": "wp-content/plugins"
+    },
     "uploads": "wp-content/uploads",
     "templates": "wp-content/themes",
     "custom": {
