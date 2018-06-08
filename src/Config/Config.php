@@ -313,15 +313,24 @@ abstract class Config
 
         */
 
+        /* Determine the database type */
         $dbType = 'mysql';
         $dbExtensions = '.sql';
+
         if(property_exists($this->configVars, 'db_type')) {
             $dbType = $this->configVars->db_type;
-            if($dbType === 'psql')
-                $dbExtensions = '.psql';
+            switch ($dbType) {
+                case 'pgsql':
+                    $dbExtensions = '.pgsql';
+                    break;
+                default:
+                    $dbExtensions = '.sql';
+
+            }
         }
 
         /* Create a timestamp for uniqueness */
+        date_default_timezone_set("America/New_York");
         $timestamp = date('Y.m.d_H.i.s');
 
         /* Set variables for the local and remote database dumps for easy reference */
@@ -337,8 +346,8 @@ abstract class Config
         /*************************    Make local and remote backups    *************************/
 
         /* Step 1. make copy of local database */
-        if($dbType === 'psql')
-            $command = "pg_dump -Fc -c --exclude-schema=topology --exclude-table=spatial_ref_sys --no-acl --no-owner --file=$localDbDump --dbname=postgres://{$localDb->dbUser}:{$localDb->dbPass}@{$localDb->dbHost}:{$localDb->dbPort}/{$localDb->db}";
+        if($dbType === 'pgsql')
+            $command = "pg_dump -Fc -c --no-owner --no-acl -N topology -T spatial_ref_sys postgresql://{$localDb->dbUser}:{$localDb->dbPass}@{$localDb->dbHost}:{$localDb->dbPort}/{$localDb->db} > $localDbDump";
         else
             $command = "mysqldump --opt --add-drop-table --skip-comments --no-create-db --host={$localDb->dbHost} --user={$localDb->dbUser} --password='{$localDb->dbPass}' --port={$localDb->dbPort} --databases {$localDb->db} --result-file=$localDbDump";
 
@@ -368,8 +377,8 @@ abstract class Config
             $this->io->note($ssh->message_log);
 
         /* If here, connected successfully to remote host! */
-        if($dbType === 'psql')
-            $command = "pg_dump -Fc -c --exclude-schema=topology --exclude-table=spatial_ref_sys --no-acl --no-owner --file=$remoteDbDump --dbname=postgres://{$this->dbUser}:{$this->dbPass}@{$this->dbHost}:{$this->dbPort}/{$this->database}";
+        if($dbType === 'pgsql')
+            $command = "pg_dump -Fc -c --no-owner --no-acl -N topology -T spatial_ref_sys postgresql://{$this->dbUser}:{$this->dbPass}@{$this->dbHost}:{$this->dbPort}/{$this->database} > $remoteDbDump";
         else
             $command = "mysqldump --opt --add-drop-table --skip-comments --no-create-db --host={$this->dbHost} --user={$this->dbUser} --password='{$this->dbPass}' --port={$this->dbPort} --databases {$this->database} --result-file=$remoteDbDump";
 
@@ -408,11 +417,11 @@ abstract class Config
             $this->exec($command, false);
 
             /* Adapt the remote database dump, and import it */
-            $this->adaptDump($remoteToLocal);
+           $this->adaptDump($remoteToLocal);
 
             /* Import it */
-            if($dbType === 'psql')
-                $command = "pg_restore -Fc -c --dbname=postgres://{$localDb->dbUser}:{$localDb->dbPass}@{$localDb->dbHost}:{$localDb->dbPort}/{$localDb->db} $remoteToLocal";
+            if($dbType === 'pgsql')
+                $command = "PGPASSWORD={$localDb->dbPass} && pg_restore -c --no-acl --no-owner -n public -U {$localDb->dbUser} -h {$localDb->dbHost} -1 -d {$localDb->db} < $remoteToLocal";
             else
                 $command = "mysql --host={$localDb->dbHost} --user={$localDb->dbUser} --password='{$localDb->dbPass}' --port={$localDb->dbPort} --database={$localDb->db} --force --execute=\"SET autocommit=0;SOURCE $remoteToLocal;COMMIT\"";
 
@@ -448,8 +457,8 @@ abstract class Config
             $this->io->text($ssh->exec($command));
 
             /* Import the database on the remote host */
-            if($dbType === 'psql')
-                $command = "pg_restore -Fc -c --dbname=postgres://{$this->dbUser}:{$this->dbPass}@{$this->dbHost}:{$this->dbPort}/{$this->database} $localToRemote";
+            if($dbType === 'pgsql')
+                $command = "PGPASSWORD={$this->dbPass} && pg_restore -c --no-acl --no-owner -n public -U {$this->dbUser} -h {$this->dbHost} -1 -d {$this->database} < $localToRemote";
             else
                 $command = "mysql --host={$this->dbHost} --user={$this->dbUser} --password='{$this->dbPass}' --port={$this->dbPort} --database={$this->database} --force --execute=\"SET autocommit=0;SOURCE $localToRemote;COMMIT\"";
 
