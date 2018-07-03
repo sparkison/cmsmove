@@ -391,7 +391,7 @@ abstract class Config
         $this->io->text($ssh->exec($command));
 
         /* Step 3. copy the remote dump down to local */
-        $this->io->text("<remote>Executing remote command:</remote> scp -p {$this->sshPort} {$this->sshUser}@{$this->host}:{$remoteDbDump}.gz {$remoteToLocal}.gz");
+        $this->io->text("<remote>Executing remote command:</remote> scp -P {$this->sshPort} {$this->sshUser}@{$this->host}:{$remoteDbDump}.gz $backupDir/");
 
         $scp = new Net_SCP($ssh);
         if (!$scp->get($remoteDbDump . '.gz', $remoteToLocal . '.gz')) {
@@ -443,7 +443,7 @@ abstract class Config
             $this->exec($command, false);
 
             /* Since the SCP output is silent, inform user of command */
-            $this->io->text("<remote>Executing remote command:</remote> scp -p {$this->sshPort} {$localDbDump}.gz {$this->sshUser}@{$this->host}:{$localToRemote}.gz");
+            $this->io->text("<remote>Executing remote command:</remote> scp -P {$this->sshPort} {$localDbDump}.gz {$this->sshUser}@{$this->host}:/tmp/");
 
             /* Copy to the remote host */
             if (!$scp->put($localToRemote . '.gz', $localDbDump . '.gz', Net_SCP::SOURCE_LOCAL_FILE)) {

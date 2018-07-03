@@ -42,9 +42,9 @@
     },
     "production": {
       "vhost": "http://mysite.com",
-      "host": "", // Only set this if you are using something like Bedrock (https://roots.io/bedrock/), where there is a separate public directory
-      "root" : "/home/mysite",
-      "public": "public_html",
+      "host": "hostname or IP address",
+      "root" : "/home/mysite/public_html",
+      "public": "", // Only set this if you are using something like Bedrock (https://roots.io/bedrock/), where there is a separate public directory,
       "user": "",
       "password": "",
       "keyfile": "",
