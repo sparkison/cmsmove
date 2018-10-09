@@ -16,7 +16,7 @@ if(file_exists(__DIR__.'/vendor')) { // Require locally for dev
     require __DIR__.'/../../autoload.php';
 }
 
-$app = new Application('CMS Move', '1.0.56');
+$app = new Application('CMS Move', '1.0.57');
 $app->add(new Start);
 $app->add(new Push);
 $app->add(new Pull);

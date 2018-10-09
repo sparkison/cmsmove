@@ -57,7 +57,7 @@ class Config extends BaseConfig
     public function templates()
     {
         /* Get the template directory from the config file */
-        $templateDir = $this->configVars->mappings->app . "/" . $this->configVars->mappings->templates;
+        $templateDir = $this->configVars->mappings->templates;
 
         /* Get the remote directory */
         $remoteDir = $this->root . "/" . $templateDir;
@@ -73,7 +73,7 @@ class Config extends BaseConfig
     public function plugins()
     {
         /* Get the plugins directory from the config file */
-        $pluginDir = $this->configVars->mappings->app . "/" . $this->configVars->mappings->plugins;
+        $pluginDir = $this->configVars->mappings->plugins;
 
         /* Get the remote directory */
         $remoteDir = $this->root . "/" . $pluginDir;
@@ -89,7 +89,7 @@ class Config extends BaseConfig
     public function modules()
     {
         /* Get the config directory from the config file */
-        $configDir = $this->configVars->mappings->app . "/" . $this->configVars->mappings->modules;
+        $configDir = $this->configVars->mappings->modules;
 
         /* Get the remote directory */
         $remoteDir = $this->root . "/" . $configDir;
@@ -105,7 +105,7 @@ class Config extends BaseConfig
     public function config()
     {
         /* Get the config directory from the config file */
-        $configDir = $this->configVars->mappings->app . "/" . $this->configVars->mappings->config;
+        $configDir = $this->configVars->mappings->config;
 
         /* Get the remote directory */
         $remoteDir = $this->root . "/" . $configDir;
@@ -121,7 +121,7 @@ class Config extends BaseConfig
     public function storage()
     {
         /* Get the config directory from the config file */
-        $configDir = $this->configVars->mappings->app . "/" . $this->configVars->mappings->storage;
+        $configDir = $this->configVars->mappings->storage;
 
         /* Get the remote directory */
         $remoteDir = $this->root . "/" . $configDir;
