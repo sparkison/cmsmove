@@ -1,6 +1,6 @@
 <?php
 
-namespace BMM\CMSMove\Config\Craft;
+namespace BMM\CMSMove\Config\Craft3;
 
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Helper\QuestionHelper;
