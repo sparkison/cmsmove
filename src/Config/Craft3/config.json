@@ -1,0 +1,56 @@
+{
+  "type": "craft3",
+  "mappings": {
+    "app": "vendor",
+    "www": "web",
+    "config": "config",
+    "plugins": "vendor",
+    "modules": "modules",
+    "templates": "templates",
+    "storage": "storage",
+    "custom": {
+      "uploads": {
+        "type": "public",
+        "directory": "uploads"
+      }
+    }
+  },
+  "environments": {
+    "local": {
+      "root": "/Users/myusername/Sites/mysite.dev",
+      "db": "",
+      "dbHost": "localhost",
+      "dbUser": "",
+      "dbPass": "",
+      "dbPort": "3306"
+    },
+    "staging": {
+      "host": "",
+      "root" : "/home/mysite",
+      "public": "public_html",
+      "user": "",
+      "password": "",
+      "keyfile": "",
+      "port": "22",
+      "db": "",
+      "dbHost": "localhost",
+      "dbUser": "",
+      "dbPass": "",
+      "dbPort": "3306"
+    },
+    "production": {
+      "host": "",
+      "root" : "/home/mysite",
+      "public": "public_html",
+      "user": "",
+      "password": "",
+      "keyfile": "",
+      "port": "22",
+      "db": "",
+      "dbHost": "localhost",
+      "dbUser": "",
+      "dbPass": "",
+      "dbPort": "3306"
+    }
+  }
+}
