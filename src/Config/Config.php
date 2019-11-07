@@ -602,7 +602,7 @@ abstract class Config
         $this->io->text("<local>Adpating database file:</local> " . $file);
         try
         {
-            if (is_readable($file)) {
+            if (is_readable($file) && is_executable($file)) {
                 $handle = fopen($file, "r");
                 if ($handle) {
                     while (!feof($handle))
@@ -624,7 +624,7 @@ abstract class Config
                 // Check if retry enabled
                 if ($retry) {
                     $this->io->text("<local>Error opening file, incorrect read permissions. We'll try and update the file permissions and try again...</local> ");
-                    $command = "sudo chmod a+x $file";
+                    $command = "sudo chmod a+rx $file";
                     $this->exec($command, false);
                     $this->adaptDump($file, $chunk_size, false);
                 } else {
