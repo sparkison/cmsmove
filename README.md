@@ -2,9 +2,9 @@
 Automated deployment for popular content management systems
 
 Currently supported systems:
-- [Craft CMS](https://craftcms.com/) - currently only for Craft CMS 2, working on Craft CMS 3 implementation, hopefully be ready for official release.
+- [Craft CMS](https://craftcms.com/) - versions 2 and 3.
 - [ExpressionEngine (2 and 3)](http://expressionengine.com/)
-- [Laravel 5.x](https://laravel.com/) - tested up to 5.5, currently still utilizes the `laravel53` config command however.
+- [Laravel 5.x](https://laravel.com/) - tested up to 5.8, currently still utilizes the `laravel53` config command however.
 - [WordPress](https://wordpress.org/)
 
 <small><i>We've been using extensively for the frameworks mentioned above. If you run into any issues please let us know so that we can get them fixed.</i></small>
