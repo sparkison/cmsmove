@@ -623,12 +623,12 @@ abstract class Config
             } else {
                 // Check if retry enabled
                 if ($retry) {
-                    $this->io->text("<local>Error opening file, incorrect read permissions. We'll try and update the permissions and try again...:</local> ");
-                    chmod($file, 0755);
+                    $this->io->text("<local>Error opening file, incorrect read permissions. We'll try and update the file permissions and try again...</local> ");
+                    $command = "sudo chmod a+x $file";
+                    $this->exec($command, false);
                     $this->adaptDump($file, $chunk_size, false);
                 } else {
-                    $fp = fileperms($file);
-                    $this->io->error('The database file is not readable, file permissions are: ' . substr(sprintf('%o', $fp), -4));
+                    $this->io->error('The database file is not readable, file permissions are: ' . fileperms($file));
                     exit();
                 }
             }
