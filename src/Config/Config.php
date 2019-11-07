@@ -592,8 +592,10 @@ abstract class Config
      * Adapt the SQL dump file
      *
      * @param $file
+     * @param int $chunk_size
+     * @param bool $retry
      */
-    public function adaptDump($file, $chunk_size = 4096)
+    public function adaptDump($file, $chunk_size = 4096, $retry = true)
     {
         $contents = array();
         // Read the file in chunks to prevent out of memory errors
@@ -619,7 +621,16 @@ abstract class Config
                     exit();
                 }
             } else {
-                $this->io->error('The database file is not readable.');
+                // Check if retry enabled
+                if ($retry) {
+                    $this->io->text("<local>Error opening file, incorrect read permissions. We'll try and update the permissions and try again...:</local> ");
+                    chmod($file, 755);
+                    $this->adaptDump($file, $chunk_size, false);
+                } else {
+                    $fp = fileperms($file);
+                    $this->io->error('The database file is not readable, file permissions are: ' . substr(sprintf('%o', $fp), -4));
+                    exit();
+                }
             }
         }
         catch(\Exception $e)
