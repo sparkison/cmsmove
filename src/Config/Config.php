@@ -624,7 +624,7 @@ abstract class Config
                 // Check if retry enabled
                 if ($retry) {
                     $this->io->text("<local>Error opening file, incorrect read permissions. We'll try and update the permissions and try again...:</local> ");
-                    chmod($file, 755);
+                    chmod($file, 0755);
                     $this->adaptDump($file, $chunk_size, false);
                 } else {
                     $fp = fileperms($file);
