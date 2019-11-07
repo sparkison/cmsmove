@@ -597,20 +597,30 @@ abstract class Config
     {
         $contents = array();
         // Read the file in chunks to prevent out of memory errors
+        $this->io->text("<local>Adpating database file:</local> " . $file);
         try
         {
-            $handle = fopen($file, "r");
-            while (!feof($handle))
-            {
-                $chunk = fread($handle, $chunk_size);
-                $contents_arr = explode("\n", $chunk);
-                foreach ($contents_arr as $line) {
-                    if ( !((substr($line, 0, 2) === "--") || (substr($line, 0, 3) === "USE")) ) {
-                        $contents[] = $line;
+            if (is_readable($file)) {
+                $handle = fopen($file, "r");
+                if ($handle) {
+                    while (!feof($handle))
+                    {
+                        $chunk = fread($handle, $chunk_size);
+                        $contents_arr = explode("\n", $chunk);
+                        foreach ($contents_arr as $line) {
+                            if ( !((substr($line, 0, 2) === "--") || (substr($line, 0, 3) === "USE")) ) {
+                                $contents[] = $line;
+                            }
+                        }
                     }
+                    fclose($handle);
+                } else {
+                    $this->io->error('Unable to open database file.');
+                    exit();
                 }
+            } else {
+                $this->io->error('The database file is not readable.');
             }
-            fclose($handle);
         }
         catch(\Exception $e)
         {
